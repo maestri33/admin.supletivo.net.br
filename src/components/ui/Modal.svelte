@@ -86,15 +86,17 @@
 
 {#if isOpen}
   <div
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby={title ? "canonical-modal-title" : undefined}
-    aria-describedby={description ? "canonical-modal-desc" : undefined}
-    data-testid={testId}
+    role="presentation"
     onclick={handleBackdropClick}
     class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4 transition-opacity animate-in fade-in duration-200"
   >
     <div
+      role="dialog"
+      tabindex="-1"
+      aria-modal="true"
+      aria-labelledby={title ? "canonical-modal-title" : undefined}
+      aria-describedby={description ? "canonical-modal-desc" : undefined}
+      data-testid={testId}
       class="w-full {sizeClasses[size] || 'max-w-md'} bg-[var(--ink-soft)]/95 text-white sm:rounded-3xl rounded-t-3xl border border-white/15 p-6 sm:p-8 shadow-2xl flex flex-col gap-6 backdrop-blur-2xl relative overflow-hidden animate-in slide-in-from-bottom-6 duration-200 max-h-[92dvh] overflow-y-auto"
     >
       <!-- Indicador tátil / Drag Handle para Mobile -->

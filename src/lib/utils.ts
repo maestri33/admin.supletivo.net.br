@@ -5,16 +5,18 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export function formatCpf(val: string): string {
-  const digits = val.replace(/\D/g, '').slice(0, 11);
+export function formatCpf(val: string | null | undefined): string {
+  if (!val) return '—';
+  const digits = String(val).replace(/\D/g, '').slice(0, 11);
   return digits
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 }
 
-export function formatPhone(val: string): string {
-  const digits = val.replace(/\D/g, '').slice(0, 11);
+export function formatPhone(val: string | null | undefined): string {
+  if (!val) return '—';
+  const digits = String(val).replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 10) {
     return digits
       .replace(/(\d{2})(\d)/, '($1) $2')

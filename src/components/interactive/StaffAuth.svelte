@@ -195,7 +195,7 @@
   <!-- Card Container Zero-G Glass -->
   <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-brand-ink/80 p-6 sm:p-8 backdrop-blur-2xl shadow-[var(--shadow-zero-g)]">
     <!-- Top Brand Accent Glow -->
-    <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-36 w-72 rounded-full bg-brand-yellow/15 blur-3xl pointer-events-none" />
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-36 w-72 rounded-full bg-brand-yellow/15 blur-3xl pointer-events-none"></div>
 
     <!-- Header & Badge -->
     <div class="text-center mb-6">

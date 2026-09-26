@@ -18,14 +18,14 @@
 
   onMount(async () => {
     try {
-      const [balRes, sumRes, commRes] = await Promise.all([
+      const [balRes, sumRes, commRes] = await Promise.allSettled([
         getFinanceBalance(),
         getFinanceSummary(),
         listCommissions(),
       ]);
-      balance = balRes;
-      summary = sumRes;
-      commissions = commRes;
+      if (balRes.status === 'fulfilled') balance = balRes.value;
+      if (sumRes.status === 'fulfilled') summary = sumRes.value;
+      if (commRes.status === 'fulfilled') commissions = commRes.value;
     } catch (err: any) {
       errorMsg = err?.message || 'Falha ao carregar dados financeiros';
     } finally {
