@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "admin-supletivo-net-br",
+  "compatibility_date": "2026-09-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "admin.supletivo.net.br/*",
+      "zone_name": "supletivo.net.br"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "4791fb0e1704410e92128e1b4b992421"
+    }
+  ]
+}

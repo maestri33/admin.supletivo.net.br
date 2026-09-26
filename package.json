@@ -1,0 +1,47 @@
+{
+  "name": "admin.supletivo.net.br",
+  "version": "0.0.0-sandbox.41",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev --port 3030",
+    "build": "astro build",
+    "start": "node ./dist/server/entry.mjs",
+    "preview": "astro preview --port 3030",
+    "check": "astro check",
+    "sync": "astro sync",
+    "lint": "eslint",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.3.2",
+    "@astrojs/node": "^11.1.5",
+    "@astrojs/react": "^6.0.6",
+    "@astrojs/svelte": "^9.0.1",
+    "@hookform/resolvers": "^5.9.1",
+    "@tabler/icons-react": "^3.46.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-query": "^5.102.2",
+    "astro": "^7.3.2",
+    "clsx": "^2.1.1",
+    "motion": "^13.1.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sonner": "^2.0.8",
+    "svelte": "^5.57.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@fontsource/archivo-black": "^5.2.8",
+    "@fontsource/inter": "^5.2.8",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import AuditoriaView from '../components/interactive/AuditoriaView.svelte';
+---
+
+<AdminLayout title="Sistema & Auditoria — Supletivo Brasil" requireAuth={true}>
+  <AuditoriaView client:load />
+</AdminLayout>

@@ -1,0 +1,10 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import StaffAuth from '../components/interactive/StaffAuth.svelte';
+---
+
+<AdminLayout title="Login Staff — Supletivo Brasil" requireAuth={false}>
+  <div class="flex min-h-[calc(100vh-12rem)] items-center justify-center py-8">
+    <StaffAuth client:load />
+  </div>
+</AdminLayout>

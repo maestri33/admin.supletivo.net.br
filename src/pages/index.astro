@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import AdminCockpit from '../components/interactive/AdminCockpit.svelte';
+---
+
+<AdminLayout title="Cockpit Administrativo — Supletivo Brasil" requireAuth={true}>
+  <AdminCockpit client:load />
+</AdminLayout>

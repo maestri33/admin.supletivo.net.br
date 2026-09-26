@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import PolosView from '../components/interactive/PolosView.svelte';
+---
+
+<AdminLayout title="Polos & Coordenadores — Supletivo Brasil" requireAuth={true}>
+  <PolosView client:load />
+</AdminLayout>

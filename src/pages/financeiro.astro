@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import FinanceiroView from '../components/interactive/FinanceiroView.svelte';
+---
+
+<AdminLayout title="Gestão Financeira — Supletivo Brasil" requireAuth={true}>
+  <FinanceiroView client:load />
+</AdminLayout>

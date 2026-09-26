@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import TreinamentoView from '../components/interactive/TreinamentoView.svelte';
+---
+
+<AdminLayout title="Catálogo de Treinamento — Supletivo Brasil" requireAuth={true}>
+  <TreinamentoView client:load />
+</AdminLayout>

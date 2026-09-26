@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import DocumentosView from '../components/interactive/DocumentosView.svelte';
+---
+
+<AdminLayout title="Fila de Documentos — Supletivo Brasil" requireAuth={true}>
+  <DocumentosView client:load />
+</AdminLayout>
