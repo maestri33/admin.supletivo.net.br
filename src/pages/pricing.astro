@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import PricingView from '../components/interactive/PricingView.svelte';
+---
+
+<AdminLayout title="Pricing & Commercial Rules — Supletivo Brasil" requireAuth={true}>
+  <PricingView client:load />
+</AdminLayout>

@@ -602,3 +602,81 @@ export function unlockPromoterTraining(promoterExternalId: string): Promise<{ de
     },
   );
 }
+
+// ── Platform Setup & Pricing Configuration ────────────────────────────────────
+
+export interface PlatformSetupBoss {
+  name: string | null;
+  cpf: string | null;
+  phone: string | null;
+  email: string | null;
+  pix_key: string | null;
+  default_brand: string | null;
+  is_configured?: boolean;
+  external_id?: string | null;
+}
+
+export interface PlatformSetupPricing {
+  price_pix: string;
+  price_card_cents: number;
+  price_card_reais?: string;
+  promo_price_pix: string;
+  promo_price_card_cents: number;
+  promo_price_card_reais?: string;
+  promoter_study_unlock_threshold: number;
+  promoter_study_complete_threshold: number;
+  promoter_price_pix: string;
+  promoter_price_card_cents: number;
+  promoter_price_card_reais?: string;
+  card_installments: number;
+  anchor_full: string;
+  description: string;
+}
+
+export interface PlatformSetupCommissions {
+  commission_direct: string;
+  commission_bonus_flat: string;
+  commission_bonus_threshold: number;
+  commission_coordinator: string;
+  commission_closing_weekday: number;
+  commission_closing_hour: number;
+}
+
+export interface PlatformSetupOut {
+  boss: PlatformSetupBoss | null;
+  pricing: PlatformSetupPricing | null;
+  commissions: PlatformSetupCommissions | null;
+  integrations: Record<string, { value: string; configured: boolean; is_secret: boolean }>;
+}
+
+export interface PricingUpdateIn {
+  price_pix?: string;
+  price_card_cents?: number;
+  promo_price_pix?: string;
+  promo_price_card_cents?: number;
+  anchor_full?: string;
+  promoter_study_unlock_threshold?: number;
+  promoter_study_complete_threshold?: number;
+  promoter_price_pix?: string;
+  promoter_price_card_cents?: number;
+  card_installments?: number;
+  description?: string;
+}
+
+export interface PlatformSetupUpdateIn {
+  boss?: Partial<PlatformSetupBoss>;
+  pricing?: PricingUpdateIn;
+  commissions?: Partial<PlatformSetupCommissions>;
+  integrations?: Record<string, string>;
+}
+
+export function getPlatformSetup(): Promise<PlatformSetupOut> {
+  return requestAuth<PlatformSetupOut>('/api/v1/staff/config/setup');
+}
+
+export function updatePlatformSetup(payload: PlatformSetupUpdateIn): Promise<PlatformSetupOut> {
+  return requestAuth<PlatformSetupOut>('/api/v1/staff/config/setup', {
+    method: 'PUT',
+    json: payload,
+  });
+}

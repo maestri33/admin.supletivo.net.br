@@ -10,8 +10,9 @@
   const items: NavItem[] = [
     { name: 'Visão Geral', href: '/', icon: 'dashboard' },
     { name: 'Polos & Coord.', href: '/polos', icon: 'building' },
-    { name: 'Documentos', href: '/documentos', icon: 'file' },
+    { name: 'Preços & Planos', href: '/precos', icon: 'tag' },
     { name: 'Financeiro', href: '/financeiro', icon: 'cash' },
+    { name: 'Documentos', href: '/documentos', icon: 'file' },
     { name: 'Usuários & Alunos', href: '/usuarios', icon: 'users' },
     { name: 'Treinamento', href: '/treinamento', icon: 'book' },
     { name: 'Sistema & Auditoria', href: '/auditoria', icon: 'shield' },

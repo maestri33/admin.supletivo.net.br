@@ -217,6 +217,19 @@
         </div>
       </a>
 
+      <!-- Módulo Preços & Planos -->
+      <a href="/precos" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 group-hover:scale-105 transition">
+            🏷️
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Preços & Regras Comerciais</h3>
+            <p class="text-xs text-white/50">Valores de vitrine, desconto por consultor e simulação</p>
+          </div>
+        </div>
+      </a>
+
       <!-- Módulo Usuários & Alunos -->
       <a href="/usuarios" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
         <div class="flex items-center gap-3 mb-2">
