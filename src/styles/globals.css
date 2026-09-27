@@ -98,16 +98,21 @@
 }
 
 /* ==========================================================================
-   SHELL APP-LIKE & VIEWPORT LOCK
+   SHELL APP-LIKE & FLUID NATIVE SCROLL
    ========================================================================== */
-html,
-body {
-  height: 100dvh;
-  overflow: hidden;
-  overscroll-behavior: none;
+html {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   background-color: var(--color-brand-bg);
@@ -125,30 +130,18 @@ body {
   color: var(--ink);
 }
 
-/* Área rolável da aplicação */
-.app-scroll {
-  flex: 1 1 0%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 1.5rem);
-  scroll-padding-top: 64px;
-  scroll-padding-bottom: 96px;
-}
-.app-scroll::-webkit-scrollbar {
-  display: none;
-}
-body:has(> header) .app-scroll {
-  padding-top: 0;
-}
-body:has(> footer) .app-scroll {
-  padding-bottom: 0.75rem;
+/* ── Ergonomia Touch Canônica para Formulários (DESIGN.md) ── */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  min-height: var(--input-height, 48px);
+  font-size: 1rem; /* 16px: impede o zoom automático no iOS Safari */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ==========================================================================

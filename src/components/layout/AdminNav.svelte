@@ -29,7 +29,7 @@
     {#each items as item}
       <a
         href={item.href}
-        class="flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-all {isActive(item.href)
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 min-h-[44px] text-xs font-semibold whitespace-nowrap transition-all touch-manipulation {isActive(item.href)
           ? 'bg-brand-yellow text-brand-ink shadow-sm font-bold'
           : 'text-white/70 hover:bg-white/10 hover:text-white'}"
       >

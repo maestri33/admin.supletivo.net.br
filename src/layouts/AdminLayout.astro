@@ -23,7 +23,7 @@ const isLoginPage = pathname === '/login';
 <html lang="pt-BR" data-theme="staff">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0b1220" />
 
     <!-- Fontes críticas pré-carregadas -->
@@ -46,7 +46,7 @@ const isLoginPage = pathname === '/login';
     <title>{title}</title>
     <meta name="description" content={description} />
   </head>
-  <body class="flex min-h-dvh flex-col bg-brand-ink text-brand-paper selection:bg-brand-yellow selection:text-brand-ink">
+  <body class="flex min-h-dvh flex-col bg-brand-ink text-brand-paper selection:bg-brand-yellow selection:text-brand-ink overflow-x-hidden">
     <!-- Aurora Backdrop Zero-JS -->
     <div class="aurora-wrap pointer-events-none" aria-hidden="true">
       <div class="aurora-layer opacity-40"></div>
@@ -58,13 +58,13 @@ const isLoginPage = pathname === '/login';
     <!-- Navigation Tabs (Only if not in login page) -->
     {!isLoginPage && <AdminNav client:load currentPath={pathname} />}
 
-    <!-- Main Content Area -->
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10">
+    <!-- Main Content Area (Natural fluid scroll) -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       <slot />
     </main>
 
     <!-- Footer minimal -->
-    <footer class="border-t border-white/5 py-4 text-center text-xs text-white/40">
+    <footer class="mt-auto border-t border-white/5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] text-center text-xs text-white/40">
       <p>© 2026 Supletivo Brasil • Painel de Controle Soberano • v0.0.0-sandbox.41</p>
     </footer>
   </body>
