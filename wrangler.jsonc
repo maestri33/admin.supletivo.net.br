@@ -9,8 +9,8 @@
   },
   "routes": [
     {
-      "pattern": "admin.supletivo.net.br/*",
-      "zone_name": "supletivo.net.br"
+      "pattern": "admin.supletivo.net.br",
+      "custom_domain": true
     }
   ],
   "kv_namespaces": [
