@@ -59,6 +59,10 @@ export function saveStaffLogin(payload: StaffLoginPayload): void {
     memoryRefreshToken = payload.refresh_token;
   }
   window.localStorage.setItem(ADMIN_LOGIN_KEY, JSON.stringify(payload));
+  try {
+    const secureFlag = typeof location !== 'undefined' && location.protocol === 'https:' ? ';Secure' : '';
+    document.cookie = `supletivo.admin.session=${encodeURIComponent(payload.access_token)};path=/;max-age=604800;SameSite=Lax${secureFlag}`;
+  } catch {}
 }
 
 export function getStaffLogin(): StaffLoginPayload | null {

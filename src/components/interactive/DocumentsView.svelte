@@ -46,6 +46,7 @@
             <th class="px-4 py-3">Aluno</th>
             <th class="px-4 py-3">CPF</th>
             <th class="px-4 py-3">Tipo</th>
+            <th class="px-4 py-3">Triagem Jev</th>
             <th class="px-4 py-3">Envio</th>
             <th class="px-4 py-3">Status</th>
             <th class="px-4 py-3 text-right">Ação</th>
@@ -57,6 +58,24 @@
               <td class="px-4 py-3 font-semibold text-white">{r.user_name || '—'}</td>
               <td class="px-4 py-3 font-mono">{formatCpf(r.cpf)}</td>
               <td class="px-4 py-3 font-medium uppercase text-brand-yellow">{r.doc_type}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  {#if r.jev_triage}
+                    <span class="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase {r.jev_triage.is_adult !== false ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                      {r.jev_triage.is_adult !== false ? '18+ Aprovado' : 'Menor 18'}
+                    </span>
+                    {#if r.jev_triage.legibility_score !== undefined}
+                      <span class="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase bg-blue-500/20 text-blue-300">
+                        Nitidez {r.jev_triage.legibility_score}/3
+                      </span>
+                    {/if}
+                  {:else}
+                    <span class="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      {r.ai_verdict || 'Jev Validado'}
+                    </span>
+                  {/if}
+                </div>
+              </td>
               <td class="px-4 py-3 text-white/60">{formatDateBr(r.uploaded_at)}</td>
               <td class="px-4 py-3">
                 <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {r.validation_status === 'pending' ? 'bg-amber-500/20 text-amber-300' : r.validation_status === 'approved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">

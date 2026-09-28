@@ -377,6 +377,12 @@ export interface DocumentReviewOut {
   uploaded_at: string;
   ai_verdict?: string;
   validation_status: 'pending' | 'review' | 'approved' | 'rejected';
+  jev_triage?: {
+    legibility_score?: number;
+    is_adult?: boolean;
+    confidence?: number;
+    notes?: string;
+  };
 }
 
 export function listDocumentReviews(): Promise<DocumentReviewOut[]> {
