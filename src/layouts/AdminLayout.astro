@@ -91,7 +91,18 @@ const isLoginPage = pathname === '/login';
   } else if (isLoginPage) {
     const rawLogin = localStorage.getItem('supletivo.admin.login');
     if (rawLogin) {
-      window.location.href = '/';
+      try {
+        const parsed = JSON.parse(rawLogin);
+        if (parsed?.access_token) {
+          const secure = location.protocol === 'https:' ? '; Secure' : '';
+          document.cookie = 'supletivo.admin.session=' + encodeURIComponent(parsed.access_token) + '; path=/; max-age=604800; SameSite=Lax' + secure;
+          window.location.href = '/';
+        } else {
+          localStorage.removeItem('supletivo.admin.login');
+        }
+      } catch {
+        localStorage.removeItem('supletivo.admin.login');
+      }
     }
   }
 </script>
