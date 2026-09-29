@@ -18,5 +18,11 @@
       "binding": "SESSION",
       "id": "4791fb0e1704410e92128e1b4b992421"
     }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "d13fec466a424ac59c25399ee8628d4a"
+    }
   ]
 }
