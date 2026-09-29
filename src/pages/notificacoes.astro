@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import NotificationsView from '../components/interactive/NotificationsView.svelte';
+---
+
+<AdminLayout title="Notificações & TTS — Supletivo Brasil" requireAuth={true}>
+  <NotificationsView client:load />
+</AdminLayout>

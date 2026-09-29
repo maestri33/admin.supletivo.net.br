@@ -27,6 +27,34 @@ export default defineConfig({
       status: 308,
       destination: '/',
     },
+    '/audit': {
+      status: 308,
+      destination: '/auditoria',
+    },
+    '/documents': {
+      status: 308,
+      destination: '/documentos',
+    },
+    '/finance': {
+      status: 308,
+      destination: '/financeiro',
+    },
+    '/hubs': {
+      status: 308,
+      destination: '/polos',
+    },
+    '/pricing': {
+      status: 308,
+      destination: '/precos',
+    },
+    '/training': {
+      status: 308,
+      destination: '/treinamento',
+    },
+    '/users': {
+      status: 308,
+      destination: '/usuarios',
+    },
   },
   integrations: [svelte(), react()],
   vite: {

@@ -1,8 +1,3 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import AuditView from '../components/interactive/AuditView.svelte';
+return Astro.redirect('/auditoria', 308);
 ---
-
-<AdminLayout title="Sistema & Auditoria — Supletivo Brasil" requireAuth={true}>
-  <AuditView client:load />
-</AdminLayout>

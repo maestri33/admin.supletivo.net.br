@@ -286,7 +286,7 @@
               <p class="text-[11px] text-emerald-400 mt-1 font-mono">
                 12x de {formatCurrencyBrl(promoInstallment)}
                 {#if cardSavings > 0}
-                  <span class="text-white/60">({formatCurrencyBrl(cardSavings)} off)</span>
+                  <span class="text-white/60">({formatCurrencyBrl(cardSavings)} de desconto)</span>
                 {/if}
               </p>
             </div>
@@ -474,13 +474,13 @@
         </div>
       </div>
 
-      <!-- Coluna Lateral: Preview ao Vivo da Vitrine -->
+      <!-- Coluna Lateral: Prévia ao Vivo da Vitrine -->
       <div class="lg:col-span-5 space-y-4 sticky top-6">
         <div class="rounded-3xl border border-white/15 bg-gradient-to-b from-white/10 to-white/5 p-6 backdrop-blur-xl shadow-2xl space-y-6">
           <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
               <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">Simulador de Vitrine</span>
-              <h3 class="text-base font-bold text-white">Preview em Tempo Real</h3>
+              <h3 class="text-base font-bold text-white">Prévia em Tempo Real</h3>
             </div>
 
             <!-- Alternador de Visão: Com ?ref= vs Sem ref -->

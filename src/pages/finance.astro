@@ -1,8 +1,3 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import FinanceView from '../components/interactive/FinanceView.svelte';
+return Astro.redirect('/financeiro', 308);
 ---
-
-<AdminLayout title="Gestão Financeira — Supletivo Brasil" requireAuth={true}>
-  <FinanceView client:load />
-</AdminLayout>

@@ -50,10 +50,23 @@
   let coordError = $state<string | null>(null);
 
   const BRANDS = [
-    { id: 'standard', name: 'Standard (Padrão)' },
+    { id: 'standard', name: 'Padrão' },
     { id: 'wyden', name: 'Wyden' },
     { id: 'estacio', name: 'Estácio' },
   ];
+
+  const PROMOTER_STATUS_LABELS: Record<string, string> = {
+    active: 'Ativo',
+    pending: 'Pendente',
+    suspended: 'Suspenso',
+    training: 'Em Treinamento',
+    inactive: 'Inativo',
+  };
+
+  function translatePromoterStatus(status?: string | null): string {
+    if (!status) return 'Ativo';
+    return PROMOTER_STATUS_LABELS[status.toLowerCase()] || status;
+  }
 
   async function loadData() {
     loading = true;
@@ -473,7 +486,7 @@
                           <td class="p-3.5 text-white/60 font-mono">{prom.phone || '—'}</td>
                           <td class="p-3.5">
                             <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {prom.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-                              {prom.status}
+                              {translatePromoterStatus(prom.status)}
                             </span>
                           </td>
                           <td class="p-3.5 text-right font-mono text-white">{prom.leads_count}</td>

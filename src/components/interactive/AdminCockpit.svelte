@@ -137,7 +137,7 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {hubs.length} <span class="text-xs font-sans text-white/50 font-normal">hubs</span>
+          {hubs.length} <span class="text-xs font-sans text-white/50 font-normal">polos</span>
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">
@@ -160,7 +160,11 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {formatCurrencyBrl((financeSummary?.pending_commissions_cents ?? 0) / 100)}
+          {formatCurrencyBrl(
+            financeSummary?.commissions?.pending?.total
+              ? Number(financeSummary.commissions.pending.total)
+              : (financeSummary?.pending_commissions_cents ?? 0) / 100
+          )}
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">
@@ -211,8 +215,8 @@
             💰
           </div>
           <div>
-            <h3 class="font-bold text-white text-base">Gestão Financeira & Payouts</h3>
-            <p class="text-xs text-white/50">Fechamentos, extrato contábil, saldo Asaas e ledger</p>
+            <h3 class="font-bold text-white text-base">Gestão Financeira & Repasses</h3>
+            <p class="text-xs text-white/50">Fechamentos, extrato contábil, saldo Asaas e razão contábil</p>
           </div>
         </div>
       </a>
@@ -238,7 +242,7 @@
           </div>
           <div>
             <h3 class="font-bold text-white text-base">Usuários, Leads & Alunos</h3>
-            <p class="text-xs text-white/50">Matrículas, liberação LMS e resgate de cadastros</p>
+            <p class="text-xs text-white/50">Matrículas, liberação de ensino e resgate de cadastros</p>
           </div>
         </div>
       </a>
@@ -251,7 +255,20 @@
           </div>
           <div>
             <h3 class="font-bold text-white text-base">Catálogo de Treinamento</h3>
-            <p class="text-xs text-white/50">Matérias para promotores, gabaritos e override</p>
+            <p class="text-xs text-white/50">Matérias para promotores, gabaritos e ajuste manual</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- Módulo Notificações -->
+      <a href="/notificacoes" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="h-10 w-10 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 group-hover:scale-105 transition">
+            🔔
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Notificações & TTS</h3>
+            <p class="text-xs text-white/50">Modelos WhatsApp, E-mail, histórico e síntese de voz</p>
           </div>
         </div>
       </a>
@@ -264,7 +281,7 @@
           </div>
           <div>
             <h3 class="font-bold text-white text-base">Sistema, Versão & Auditoria</h3>
-            <p class="text-xs text-white/50">Oráculo Release Train, logs de IA e integrações</p>
+            <p class="text-xs text-white/50">Oráculo de versão global, logs de IA e integrações</p>
           </div>
         </div>
       </a>

@@ -31,12 +31,12 @@
 
   const ROLE_OPTIONS = [
     { id: '', label: 'Todos os Usuários' },
-    { id: 'student', label: 'Alunos (student)' },
-    { id: 'promoter', label: 'Promotores (promoter)' },
-    { id: 'coordinator', label: 'Coordenadores de Polo (coordinator)' },
-    { id: 'staff', label: 'Staff / Admin (staff)' },
-    { id: 'lead', label: 'Leads (lead)' },
-    { id: 'enrollment', label: 'Em Matrícula (enrollment)' },
+    { id: 'student', label: 'Alunos' },
+    { id: 'promoter', label: 'Promotores' },
+    { id: 'coordinator', label: 'Coordenadores de Polo' },
+    { id: 'staff', label: 'Administração' },
+    { id: 'lead', label: 'Leads' },
+    { id: 'enrollment', label: 'Em Matrícula' },
   ];
 
   async function loadUsers() {
@@ -109,7 +109,7 @@
       case 'coordinator':
         return { label: 'Coordenador de Polo', bg: 'bg-purple-500/20', text: 'text-purple-300', border: 'border-purple-400/30' };
       case 'staff':
-        return { label: 'Staff Master', bg: 'bg-[var(--yellow)]/20', text: 'text-[var(--yellow)]', border: 'border-[var(--yellow)]/40' };
+        return { label: 'Administrador', bg: 'bg-[var(--yellow)]/20', text: 'text-[var(--yellow)]', border: 'border-[var(--yellow)]/40' };
       case 'lead':
         return { label: 'Lead', bg: 'bg-amber-500/20', text: 'text-amber-300', border: 'border-amber-400/30' };
       case 'enrollment':
@@ -209,8 +209,8 @@
           <tr>
             <th class="px-5 py-4">Usuário / Pessoa</th>
             <th class="px-5 py-4">CPF</th>
-            <th class="px-5 py-4">Telefone (Login)</th>
-            <th class="px-5 py-4">Papéis Ativos (Multi-Role)</th>
+            <th class="px-5 py-4">Telefone de Acesso</th>
+            <th class="px-5 py-4">Papéis Ativos</th>
             <th class="px-5 py-4 text-right">Ações</th>
           </tr>
         </thead>
@@ -227,7 +227,7 @@
                     {user.name || 'Sem nome informado'}
                     {#if user.is_superuser}
                       <span class="rounded bg-brand-yellow/20 border border-brand-yellow/40 text-[9px] font-bold text-brand-yellow px-1.5 py-0.5 uppercase">
-                        Superuser
+                        Administrador
                       </span>
                     {/if}
                   </p>
@@ -260,7 +260,7 @@
                   {:else if user.is_superuser}
                     {@const b = getRoleBadge('staff')}
                     <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold border {b.bg} {b.text} {b.border}">
-                      Staff Master
+                      Administrador
                     </span>
                   {:else}
                     <span class="text-white/30 text-[10px] italic">Sem papéis de funil</span>
@@ -273,14 +273,14 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     onclick={() => openPhoneRescue(user)}
-                    class="rounded-lg border border-white/15 bg-white/5 hover:bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/80 hover:text-white transition-all cursor-pointer"
-                    title="Resgate / Troca de telefone de login"
+                    class="min-h-[48px] rounded-lg border border-white/15 bg-white/5 hover:bg-white/15 px-3 py-2 text-[11px] font-semibold text-white/80 hover:text-white transition-all cursor-pointer"
+                    title="Resgate / Troca de telefone de acesso"
                   >
                     Resgatar Chip
                   </button>
                   <button
                     onclick={() => openDetail(user)}
-                    class="rounded-lg bg-brand-yellow/10 border border-brand-yellow/30 hover:bg-brand-yellow/20 px-2.5 py-1 text-[11px] font-bold text-brand-yellow transition-all cursor-pointer"
+                    class="min-h-[48px] rounded-lg bg-brand-yellow/10 border border-brand-yellow/30 hover:bg-brand-yellow/20 px-3 py-2 text-[11px] font-bold text-brand-yellow transition-all cursor-pointer"
                   >
                     Ver Detalhes
                   </button>
@@ -298,10 +298,10 @@
 <Modal
   isOpen={isPhoneModalOpen}
   onClose={() => (isPhoneModalOpen = false)}
-  title="Resgate de Telefone de Login"
+  title="Resgate de Telefone de Acesso"
   eyebrow="Segurança & Acesso"
   eyebrowVariant="amber"
-  description={`Atualize o número de WhatsApp/login de "${selectedUserForPhone?.name || 'usuário'}" em caso de perda ou troca de chip.`}
+  description={`Atualize o número de WhatsApp/acesso de "${selectedUserForPhone?.name || 'usuário'}" em caso de perda ou troca de chip.`}
   size="sm"
 >
   {#snippet children()}
@@ -323,7 +323,7 @@
           class="w-full rounded-xl border border-white/15 bg-white/10 px-3.5 py-2.5 text-white outline-none focus:border-brand-yellow font-mono text-sm"
         />
         <p class="text-[10px] text-white/40 mt-1">
-          O novo telefone será usado para validação OTP no login passwordless.
+          O novo telefone será usado para validação por código único no WhatsApp.
         </p>
       </div>
 
@@ -331,14 +331,14 @@
         <button
           type="button"
           onclick={() => (isPhoneModalOpen = false)}
-          class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 font-bold text-white/80 hover:bg-white/10 cursor-pointer"
+          class="min-h-[48px] rounded-xl border border-white/15 bg-white/5 px-4 py-2 font-bold text-white/80 hover:bg-white/10 cursor-pointer"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={isSubmittingPhone}
-          class="rounded-xl bg-brand-yellow px-5 py-2 font-bold text-brand-ink hover:brightness-110 disabled:opacity-50 cursor-pointer shadow-lg"
+          class="min-h-[48px] rounded-xl bg-brand-yellow px-5 py-2 font-bold text-brand-ink hover:brightness-110 disabled:opacity-50 cursor-pointer shadow-lg"
         >
           {isSubmittingPhone ? 'Salvando...' : 'Atualizar Telefone'}
         </button>
@@ -347,12 +347,12 @@
   {/snippet}
 </Modal>
 
-<!-- Modal: Detalhes do Usuário Multi-Role -->
+<!-- Modal: Detalhes do Usuário -->
 <Modal
   isOpen={isDetailModalOpen}
   onClose={() => (isDetailModalOpen = false)}
   title="Ficha do Usuário"
-  eyebrow="Perfil Multi-Role"
+  eyebrow="Perfil Unificado"
   eyebrowVariant="blue"
   description={`Visão consolidada da pessoa e suas funções dentro do ecossistema.`}
   size="md"
@@ -384,20 +384,20 @@
         </div>
 
         <div>
-          <span class="text-white/60 text-[11px] uppercase font-bold block mb-2">Papéis Concedidos (Roles Ativas):</span>
+          <span class="text-white/60 text-[11px] uppercase font-bold block mb-2">Papéis Concedidos:</span>
           <div class="flex items-center gap-2 flex-wrap">
             {#if detailUser.roles && detailUser.roles.length > 0}
               {#each detailUser.roles as role}
                 {@const b = getRoleBadge(role)}
                 <span class="rounded-full px-3 py-1 text-xs font-bold border {b.bg} {b.text} {b.border}">
-                  {b.label} ({role})
+                  {b.label}
                 </span>
               {/each}
             {/if}
             {#if detailUser.is_superuser}
               {@const b = getRoleBadge('staff')}
               <span class="rounded-full px-3 py-1 text-xs font-bold border {b.bg} {b.text} {b.border}">
-                Staff Master Superuser
+                Administrador
               </span>
             {/if}
           </div>

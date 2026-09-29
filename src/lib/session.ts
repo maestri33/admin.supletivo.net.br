@@ -27,8 +27,10 @@ export interface StaffCheckPayload {
   external_id: string | null;
   otp_sent: boolean;
   otp_wait: number | null;
-  whatsapp: boolean | null;
-  channel: string | null;
+  masked_email?: string | null;
+  channels_sent?: string[] | null;
+  whatsapp?: boolean | null;
+  channel?: string | null;
   identifier?: string;
 }
 
@@ -60,10 +62,12 @@ export function saveStaffLogin(payload: StaffLoginPayload): void {
   }
   window.localStorage.setItem(ADMIN_LOGIN_KEY, JSON.stringify(payload));
   try {
-    const secureFlag = typeof location !== 'undefined' && location.protocol === 'https:' ? ';Secure' : '';
-    document.cookie = `supletivo.admin.session=${encodeURIComponent(payload.access_token)};path=/;max-age=604800;SameSite=Lax${secureFlag}`;
+    const secureFlag = typeof location !== 'undefined' && location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `supletivo.admin.session=${encodeURIComponent(payload.access_token)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
   } catch {}
 }
+
+export const setStaffLogin = saveStaffLogin;
 
 export function getStaffLogin(): StaffLoginPayload | null {
   if (typeof window === 'undefined') return null;

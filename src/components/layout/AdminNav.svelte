@@ -3,19 +3,21 @@
 
   interface NavItem {
     name: string;
+    label: string;
     href: string;
     icon: string;
   }
 
   const items: NavItem[] = [
-    { name: 'Visão Geral', href: '/', icon: 'dashboard' },
-    { name: 'Polos & Coord.', href: '/polos', icon: 'building' },
-    { name: 'Preços & Planos', href: '/precos', icon: 'tag' },
-    { name: 'Financeiro', href: '/financeiro', icon: 'cash' },
-    { name: 'Documentos', href: '/documentos', icon: 'file' },
-    { name: 'Usuários & Alunos', href: '/usuarios', icon: 'users' },
-    { name: 'Treinamento', href: '/treinamento', icon: 'book' },
-    { name: 'Sistema & Auditoria', href: '/auditoria', icon: 'shield' },
+    { name: 'Visão Geral', label: 'Visão Geral', href: '/', icon: 'dashboard' },
+    { name: 'Polos & Coord.', label: 'Polos & Coord.', href: '/polos', icon: 'building' },
+    { name: 'Preços & Planos', label: 'Preços & Planos', href: '/precos', icon: 'tag' },
+    { name: 'Financeiro', label: 'Financeiro', href: '/financeiro', icon: 'cash' },
+    { name: 'Documentos', label: 'Documentos', href: '/documentos', icon: 'file' },
+    { name: 'Usuários & Alunos', label: 'Usuários & Alunos', href: '/usuarios', icon: 'users' },
+    { name: 'Treinamento', label: 'Treinamento', href: '/treinamento', icon: 'book' },
+    { href: '/notificacoes', label: 'Notificações', name: 'Notificações', icon: 'bell' },
+    { name: 'Sistema & Auditoria', label: 'Sistema & Auditoria', href: '/auditoria', icon: 'shield' },
   ];
 
   function isActive(href: string): boolean {
@@ -29,11 +31,11 @@
     {#each items as item}
       <a
         href={item.href}
-        class="flex items-center gap-2 rounded-lg px-4 py-2.5 min-h-[44px] text-xs font-semibold whitespace-nowrap transition-all touch-manipulation {isActive(item.href)
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 min-h-[48px] text-xs font-semibold whitespace-nowrap transition-all touch-manipulation {isActive(item.href)
           ? 'bg-brand-yellow text-brand-ink shadow-sm font-bold'
           : 'text-white/70 hover:bg-white/10 hover:text-white'}"
       >
-        <span>{item.name}</span>
+        <span>{item.label}</span>
       </a>
     {/each}
   </div>

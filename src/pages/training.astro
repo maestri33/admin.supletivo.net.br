@@ -1,8 +1,3 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import TrainingView from '../components/interactive/TrainingView.svelte';
+return Astro.redirect('/treinamento', 308);
 ---
-
-<AdminLayout title="Catálogo de Treinamento — Supletivo Brasil" requireAuth={true}>
-  <TrainingView client:load />
-</AdminLayout>

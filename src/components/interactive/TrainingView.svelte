@@ -342,7 +342,7 @@
 
                 <div class="flex items-center gap-1.5 flex-wrap justify-end">
                   <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {m.kind === 'fixed' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'}">
-                    {m.kind === 'fixed' ? 'Fixa (Onboarding)' : 'Transitória'}
+                    {m.kind === 'fixed' ? 'Fixa (Integração)' : 'Transitória'}
                   </span>
 
                   {#if m.blocking}
@@ -523,15 +523,15 @@
                 <div class="flex items-center gap-2">
                   <button
                     onclick={() => openOverrideModal(sub)}
-                    class="rounded-xl border border-white/15 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs font-bold text-white transition-all cursor-pointer"
+                    class="min-h-[48px] rounded-xl border border-white/15 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs font-bold text-white transition-all cursor-pointer"
                   >
-                    Ajustar / Override
+                    Ajuste Manual
                   </button>
 
                   <button
                     disabled={isUnlocking}
                     onclick={() => handleUnlockPromoter(sub.user_external_id, sub.user_name)}
-                    class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-3.5 py-1.5 text-xs font-bold text-emerald-300 transition-all cursor-pointer"
+                    class="min-h-[48px] rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-3.5 py-1.5 text-xs font-bold text-emerald-300 transition-all cursor-pointer"
                     title="Aprova todas as matérias pendentes e libera o painel do promotor"
                   >
                     Liberar Promotor
@@ -551,7 +551,7 @@
   isOpen={isCreateModalOpen}
   onClose={() => (isCreateModalOpen = false)}
   title="Nova Matéria de Treinamento"
-  eyebrow="LMS & Autoria"
+  eyebrow="Ensino & Autoria"
   eyebrowVariant="yellow"
   description="Crie uma nova matéria de capacitação com pergunta aberta e gabarito esperado para correção automática pela IA."
   size="lg"
@@ -736,11 +736,11 @@
   {/snippet}
 </Modal>
 
-<!-- Modal: Staff Override de Submissão -->
+<!-- Modal: Ajuste Manual de Submissão -->
 <Modal
   isOpen={isOverrideModalOpen}
   onClose={() => (isOverrideModalOpen = false)}
-  title="Ajuste Manual de Submissão (Staff Override)"
+  title="Ajuste Manual de Submissão"
   eyebrow="Auditoria Humana"
   eyebrowVariant="amber"
   description={`Revisão manual da resposta do promotor "${selectedSubmission?.user_name || ''}".`}

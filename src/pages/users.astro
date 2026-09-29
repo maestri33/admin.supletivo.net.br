@@ -1,8 +1,3 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import UsersView from '../components/interactive/UsersView.svelte';
+return Astro.redirect('/usuarios', 308);
 ---
-
-<AdminLayout title="Usuários & Alunos — Supletivo Brasil" requireAuth={true}>
-  <UsersView client:load />
-</AdminLayout>

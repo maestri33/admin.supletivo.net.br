@@ -370,13 +370,20 @@ export function getNetworkTree(hubExternalId?: string): Promise<NetworkTreeHubOu
 
 export interface DocumentReviewOut {
   external_id: string;
-  user_external_id: string;
-  user_name: string;
-  cpf: string;
-  doc_type: string;
-  uploaded_at: string;
+  user_external_id: string | null;
+  name?: string;
+  user_name?: string;
+  phone?: string | null;
+  cpf: string | null;
+  hub_name?: string | null;
+  type?: string;
+  kind?: string;
+  doc_type?: string;
+  reason?: string;
+  created_at?: string;
+  uploaded_at?: string;
   ai_verdict?: string;
-  validation_status: 'pending' | 'review' | 'approved' | 'rejected';
+  validation_status?: 'pending' | 'review' | 'approved' | 'rejected' | string;
   jev_triage?: {
     legibility_score?: number;
     is_adult?: boolean;
@@ -385,8 +392,84 @@ export interface DocumentReviewOut {
   };
 }
 
-export function listDocumentReviews(): Promise<DocumentReviewOut[]> {
-  return requestAuth<DocumentReviewOut[]>('/api/v1/staff/documents/reviews');
+export interface DossierProfileOut {
+  name?: string | null;
+  cpf?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  birth_date?: string | null;
+  mother_name?: string | null;
+  father_name?: string | null;
+  pix_key?: string | null;
+  selfie_needs_meeting?: boolean;
+}
+
+export interface DossierMediaOut {
+  front_photo?: string | null;
+  back_photo?: string | null;
+  full_photo?: string | null;
+  selfie_photo?: string | null;
+  face_crop?: string | null;
+  address_photo?: string | null;
+}
+
+export interface DossierDocumentDataOut {
+  doc_type?: string | null;
+  number?: string | null;
+  state?: string | null;
+  validation_status?: string | null;
+  validation_reason?: string | null;
+  extracted_data?: Record<string, unknown>;
+}
+
+export interface DossierBiometricsOut {
+  selfie_status?: string | null;
+  selfie_reason?: string | null;
+  verifications?: Array<Record<string, unknown>>;
+}
+
+export interface DossierAddressOut {
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipcode?: string | null;
+}
+
+export interface UserDossierOut {
+  user_external_id: string;
+  profile: DossierProfileOut;
+  media: DossierMediaOut;
+  document_data: DossierDocumentDataOut;
+  biometrics: DossierBiometricsOut;
+  address: DossierAddressOut;
+}
+
+export function listDocumentReviews(hub?: string, docType?: string): Promise<DocumentReviewOut[]> {
+  const params = new URLSearchParams();
+  if (hub) params.set('hub', hub);
+  if (docType) params.set('doc_type', docType);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  return requestAuth<DocumentReviewOut[]>(`/api/v1/staff/documents/reviews${query}`);
+}
+
+export function getUserDossier(userExternalId: string): Promise<UserDossierOut> {
+  return requestAuth<UserDossierOut>(`/api/v1/staff/documents/${encodeURIComponent(userExternalId)}/dossier`);
+}
+
+export function decideDocument(
+  userExternalId: string,
+  payload: { kind: string; approve: boolean; reason?: string | null; doc_id?: string | null },
+): Promise<{ detail: string; status: string }> {
+  return requestAuth<{ detail: string; status: string }>(
+    `/api/v1/staff/documents/${encodeURIComponent(userExternalId)}/decide`,
+    {
+      method: 'POST',
+      json: payload,
+    },
+  );
 }
 
 /* =========================================================================
@@ -394,7 +477,9 @@ export function listDocumentReviews(): Promise<DocumentReviewOut[]> {
  * ========================================================================= */
 
 export interface FinanceBalanceOut {
-  balance: number;
+  balance: number | null;
+  error?: string | null;
+  note?: string | null;
   available_balance?: number;
   blocked_balance?: number;
 }
@@ -403,11 +488,18 @@ export function getFinanceBalance(): Promise<FinanceBalanceOut> {
   return requestAuth<FinanceBalanceOut>('/api/v1/staff/finance/balance');
 }
 
+export interface FinanceSummaryStatusItemOut {
+  count: number;
+  total: string;
+}
+
 export interface FinanceSummaryOut {
-  pending_commissions_cents: number;
-  paid_commissions_cents: number;
-  payout_queue_cents: number;
-  total_payouts_cents: number;
+  commissions?: Record<string, FinanceSummaryStatusItemOut>;
+  payment_requests?: Record<string, FinanceSummaryStatusItemOut>;
+  pending_commissions_cents?: number;
+  paid_commissions_cents?: number;
+  payout_queue_cents?: number;
+  total_payouts_cents?: number;
 }
 
 export function getFinanceSummary(): Promise<FinanceSummaryOut> {
@@ -416,9 +508,14 @@ export function getFinanceSummary(): Promise<FinanceSummaryOut> {
 
 export interface StaffCommissionOut {
   external_id: string;
-  beneficiary_name: string;
-  amount_cents: number;
+  payee_external_id?: string | null;
+  payee_role?: string;
+  source_type?: string;
+  amount?: string;
+  beneficiary_name?: string;
+  amount_cents?: number;
   status: string;
+  external_reference?: string | null;
   created_at: string;
   hub_name?: string;
 }
@@ -459,29 +556,44 @@ export function changeUserPhone(external_id: string, phone: string): Promise<{ e
 export interface StaffLeadOut {
   external_id: string;
   name: string | null;
-  phone: string;
+  phone: string | null;
+  cpf?: string | null;
   email: string | null;
   status: string;
-  created_at: string;
+  hub?: string | null;
+  promoter?: string | null;
+  created_at: string | null;
+  step?: number | null;
+  payment_method?: string | null;
   amount?: string;
 }
 
-export function listLeads(): Promise<StaffLeadOut[]> {
-  return requestAuth<StaffLeadOut[]>('/api/v1/staff/leads');
+export function listLeads(hub?: string, status?: string): Promise<StaffLeadOut[]> {
+  const params = new URLSearchParams();
+  if (hub) params.set('hub', hub);
+  if (status) params.set('status', status);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  return requestAuth<StaffLeadOut[]>(`/api/v1/staff/leads${query}`);
 }
 
 export interface StaffStudentOut {
   external_id: string;
-  name: string | null;
-  cpf: string | null;
-  phone: string;
   status: string;
+  self_study: boolean;
+  hub_external_id: string;
+  name: string | null;
+  cpf?: string | null;
+  phone?: string | null;
   hub_name?: string | null;
   platform_assigned?: boolean;
 }
 
-export function listStudents(): Promise<StaffStudentOut[]> {
-  return requestAuth<StaffStudentOut[]>('/api/v1/staff/students');
+export function listStudents(hub?: string, status?: string): Promise<StaffStudentOut[]> {
+  const params = new URLSearchParams();
+  if (hub) params.set('hub', hub);
+  if (status) params.set('status', status);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  return requestAuth<StaffStudentOut[]>(`/api/v1/staff/students${query}`);
 }
 
 /* =========================================================================
@@ -686,3 +798,108 @@ export function updatePlatformSetup(payload: PlatformSetupUpdateIn): Promise<Pla
     json: payload,
   });
 }
+
+/* =========================================================================
+ * 8. NOTIFICAÇÕES, TEMPLATES, HISTÓRICO & TTS (/api/v1/staff/notify)
+ * ========================================================================= */
+
+export interface NotifyTriggerOut {
+  fires_on: string;
+  source?: string | null;
+  delay_minutes: number;
+  active: boolean;
+}
+
+export interface NotifyTemplateOut {
+  event: string;
+  external_id: string;
+  title?: string | null;
+  subject?: string | null;
+  body_md?: string | null;
+  is_tts: boolean;
+  channels: string;
+  media_url?: string | null;
+  media_type?: string | null;
+  mail_template: string;
+  notes?: string | null;
+  updated_at: string;
+  trigger?: NotifyTriggerOut | null;
+}
+
+export interface NotifyEventOut {
+  event: string;
+  has_template: boolean;
+  has_in_memory: boolean;
+  active: boolean;
+}
+
+export interface NotifyHistoryItemOut {
+  external_id?: string | null;
+  caller?: string | null;
+  recipient_phone?: string | null;
+  recipient_email?: string | null;
+  title?: string | null;
+  subject?: string | null;
+  text: string;
+  want_whatsapp: boolean;
+  want_email: boolean;
+  want_tts: boolean;
+  whatsapp_status?: string | null;
+  email_status?: string | null;
+  tts_status?: string | null;
+  whatsapp_error?: string | null;
+  email_error?: string | null;
+  tts_error?: string | null;
+  attempts: number;
+  idempotency_key?: string | null;
+  created_at?: string | null;
+}
+
+export interface TtsOptionOut {
+  model: string;
+  voice_female: string;
+  voice_male: string;
+}
+
+export interface TtsConfigOut {
+  omniroute_url: string;
+  chain: TtsOptionOut[];
+  cross_gender_rule: string;
+}
+
+export function listNotifyTemplates(): Promise<NotifyTemplateOut[]> {
+  return requestAuth<NotifyTemplateOut[]>('/api/v1/staff/notify/templates');
+}
+
+export function listNotifyEvents(): Promise<NotifyEventOut[]> {
+  return requestAuth<NotifyEventOut[]>('/api/v1/staff/notify/events');
+}
+
+export function getNotifyHistory(limit: number = 100): Promise<NotifyHistoryItemOut[]> {
+  return requestAuth<NotifyHistoryItemOut[]>(`/api/v1/staff/notify/history?limit=${encodeURIComponent(String(limit))}`);
+}
+
+export function getTtsConfig(): Promise<TtsConfigOut> {
+  return requestAuth<TtsConfigOut>('/api/v1/staff/notify/tts/config');
+}
+
+export function patchNotifyTemplate(
+  event: string,
+  payload: Partial<Pick<NotifyTemplateOut, 'title' | 'subject' | 'body_md' | 'is_tts' | 'channels' | 'notes'>>,
+): Promise<NotifyTemplateOut> {
+  return requestAuth<NotifyTemplateOut>(`/api/v1/staff/notify/templates/${encodeURIComponent(event)}`, {
+    method: 'PATCH',
+    json: payload,
+  });
+}
+
+export function testNotifyTemplate(
+  event: string,
+  ctx?: Record<string, unknown>,
+): Promise<{ external_id: string }> {
+  return requestAuth<{ external_id: string }>(`/api/v1/staff/notify/templates/${encodeURIComponent(event)}/test`, {
+    method: 'POST',
+    json: { ctx: ctx ?? {} },
+  });
+}
+

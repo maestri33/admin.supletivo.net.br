@@ -1,8 +1,3 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import DocumentsView from '../components/interactive/DocumentsView.svelte';
+return Astro.redirect('/documentos', 308);
 ---
-
-<AdminLayout title="Fila de Documentos — Supletivo Brasil" requireAuth={true}>
-  <DocumentsView client:load />
-</AdminLayout>

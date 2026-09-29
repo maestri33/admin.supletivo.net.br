@@ -1,6 +1,7 @@
 ---
 import AdminHeader from '../components/layout/AdminHeader.astro';
 import AdminNav from '../components/layout/AdminNav.svelte';
+import pkg from '../../package.json';
 import '../styles/globals.css';
 
 interface Props {
@@ -20,7 +21,7 @@ const isLoginPage = pathname === '/login';
 ---
 
 <!doctype html>
-<html lang="pt-BR" data-theme="staff">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -65,7 +66,7 @@ const isLoginPage = pathname === '/login';
 
     <!-- Footer minimal -->
     <footer class="mt-auto border-t border-white/5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] text-center text-xs text-white/40">
-      <p>© 2026 Supletivo Brasil • Painel de Controle Soberano • v0.0.0-sandbox.41</p>
+      <p>© 2026 Supletivo Brasil • Painel de Controle Soberano • {`v${pkg.version}`}</p>
     </footer>
   </body>
 </html>
@@ -75,13 +76,15 @@ const isLoginPage = pathname === '/login';
   if (requireAuth && !isLoginPage) {
     const rawLogin = localStorage.getItem('supletivo.admin.login');
     if (!rawLogin) {
+      const secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = 'supletivo.admin.session=; path=/; max-age=0; SameSite=Lax' + secure;
       window.location.href = '/login';
     } else {
       try {
         const parsed = JSON.parse(rawLogin);
         if (parsed?.access_token && !document.cookie.includes('supletivo.admin.session=')) {
-          const secure = location.protocol === 'https:' ? ';Secure' : '';
-          document.cookie = 'supletivo.admin.session=' + encodeURIComponent(parsed.access_token) + ';path=/;max-age=604800;SameSite=Lax' + secure;
+          const secure = location.protocol === 'https:' ? '; Secure' : '';
+          document.cookie = 'supletivo.admin.session=' + encodeURIComponent(parsed.access_token) + '; path=/; max-age=604800; SameSite=Lax' + secure;
         }
       } catch {}
     }
