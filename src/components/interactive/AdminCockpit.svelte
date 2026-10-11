@@ -6,6 +6,7 @@
     getFinanceBalance,
     listDocumentReviews,
     listHubs,
+    getErrorMessage,
     type SystemStatusOut,
     type FinanceSummaryOut,
     type FinanceBalanceOut,
@@ -19,8 +20,8 @@
   let systemStatus: SystemStatusOut | null = null;
   let financeSummary: FinanceSummaryOut | null = null;
   let financeBalance: FinanceBalanceOut | null = null;
-  let pendingReviews: DocumentReviewOut[] = [];
-  let hubs: HubOut[] = [];
+  let pendingReviews: DocumentReviewOut[] | null = null;
+  let hubs: HubOut[] | null = null;
 
   let loading: boolean = true;
   let errorMsg: string | null = null;
@@ -40,6 +41,8 @@
       if (finBal.status === 'fulfilled') financeBalance = finBal.value;
       if (reviews.status === 'fulfilled') pendingReviews = reviews.value;
       if (hubsList.status === 'fulfilled') hubs = hubsList.value;
+      const failures = [sys, finSum, finBal, reviews, hubsList].filter((result) => result.status === 'rejected');
+      if (failures.length) errorMsg = `${failures.length} consulta(s) indisponível(is). ${getErrorMessage((failures[0] as PromiseRejectedResult).reason)}`;
     } catch (err: any) {
       errorMsg = err?.message || 'Falha ao carregar indicadores';
     } finally {
@@ -49,6 +52,7 @@
 </script>
 
 <div class="space-y-8">
+  {#if errorMsg}<p role="alert" class="text-[var(--danger)]">{errorMsg}</p>{/if}
   <!-- Top Greeting & Cockpit Banner -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
     <div>
@@ -69,7 +73,7 @@
       <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-right">
         <span class="block text-[10px] uppercase font-bold text-white/40">Status do Banco</span>
         <span class="text-xs font-mono font-bold text-emerald-400">
-          {systemStatus?.database ?? (loading ? 'Conectando...' : 'Ativo')}
+          {systemStatus?.database ?? (loading ? 'Conectando...' : 'Indisponível')}
         </span>
       </div>
     </div>
@@ -91,7 +95,7 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {formatCurrencyBrl(financeBalance?.balance ?? 0)}
+          {financeBalance ? formatCurrencyBrl(financeBalance.balance) : 'Indisponível'}
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">
@@ -114,7 +118,7 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {pendingReviews.length} <span class="text-xs font-sans text-white/50 font-normal">dossiês</span>
+          {pendingReviews === null ? 'Indisponível' : `${pendingReviews.length} dossiês`}
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">
@@ -137,7 +141,7 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {hubs.length} <span class="text-xs font-sans text-white/50 font-normal">polos</span>
+          {hubs === null ? 'Indisponível' : `${hubs.length} polos`}
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">
@@ -160,11 +164,11 @@
         {#if loading}
           <span class="text-white/30 text-lg">Carregando...</span>
         {:else}
-          {formatCurrencyBrl(
+          {financeSummary ? formatCurrencyBrl(
             financeSummary?.commissions?.pending?.total
               ? Number(financeSummary.commissions.pending.total)
               : (financeSummary?.pending_commissions_cents ?? 0) / 100
-          )}
+          ) : 'Indisponível'}
         {/if}
       </div>
       <div class="mt-2 text-xs text-white/50 flex items-center justify-between">

@@ -41,6 +41,9 @@ interface RequestOptions {
 const RETRY_DELAYS_MS = [250, 800];
 
 async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
+  const method = opts.method ?? (opts.json !== undefined || opts.formData !== undefined ? 'POST' : 'GET');
+  // A lost response must not replay a financial or notification mutation.
+  if (method !== 'GET') return requestOnce<T>(path, opts);
   for (const delay of RETRY_DELAYS_MS) {
     try {
       return await requestOnce<T>(path, opts);
@@ -101,7 +104,7 @@ async function requestOnce<T>(path: string, opts: RequestOptions = {}): Promise<
 
 let refreshPromise: Promise<StaffLoginPayload> | null = null;
 
-async function refreshAuthTokens(): Promise<StaffLoginPayload> {
+export async function refreshStaffSession(): Promise<StaffLoginPayload> {
   if (!refreshPromise) {
     const refresh = getRefreshToken();
     if (!refresh) {
@@ -133,11 +136,14 @@ export async function requestAuth<T>(path: string, opts: RequestOptions = {}): P
   } catch (error: unknown) {
     if (!(error instanceof ApiError) || error.status !== 401) throw error;
     try {
-      const refreshed = await refreshAuthTokens();
+      const refreshed = await refreshStaffSession();
       return await request<T>(path, { ...opts, token: refreshed.access_token });
-    } catch {
-      clearSession();
-      throw new ApiError('Sessão expirada. Faça login novamente.', 401);
+    } catch (refreshError) {
+      if (refreshError instanceof ApiError && refreshError.status === 401) {
+        clearSession();
+        throw new ApiError('Sessão expirada. Faça login novamente.', 401);
+      }
+      throw refreshError;
     }
   }
 }
@@ -761,6 +767,7 @@ export interface PlatformSetupCommissions {
 }
 
 export interface PlatformSetupOut {
+  default_promoter_external_id: string | null;
   boss: PlatformSetupBoss | null;
   pricing: PlatformSetupPricing | null;
   commissions: PlatformSetupCommissions | null;
@@ -782,6 +789,7 @@ export interface PricingUpdateIn {
 }
 
 export interface PlatformSetupUpdateIn {
+  default_promoter_external_id?: string | null;
   boss?: Partial<PlatformSetupBoss>;
   pricing?: PricingUpdateIn;
   commissions?: Partial<PlatformSetupCommissions>;
