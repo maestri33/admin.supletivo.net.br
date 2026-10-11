@@ -5,12 +5,16 @@
     loginStaff,
     loginStaffPassword,
     getErrorMessage,
+    refreshStaffSession,
+    ApiError,
   } from '@/lib/api';
   import {
     saveStaffCheck,
     getStaffCheck,
     clearStaffCheck,
     saveStaffLogin,
+    getStaffLogin,
+    clearSession,
     type StaffCheckPayload,
   } from '@/lib/session';
   import { formatCpf, formatPhone } from '@/lib/utils';
@@ -34,7 +38,20 @@
   let loading: boolean = false;
   let errorMsg: string | null = null;
 
-  onMount(() => {
+  onMount(() => { void resumeSession(); });
+
+  async function resumeSession() {
+    if (getStaffLogin()?.refresh_token) {
+      loading = true;
+      try {
+        await refreshStaffSession();
+        window.location.replace('/');
+        return;
+      } catch (cause) {
+        if (cause instanceof ApiError && cause.status === 401) clearSession();
+        else errorMsg = getErrorMessage(cause);
+      } finally { loading = false; }
+    }
     const cached = getStaffCheck();
     if (cached && cached.external_id && cached.found) {
       checkPayload = cached;
@@ -43,7 +60,7 @@
         startCooldown(cached.otp_wait);
       }
     }
-  });
+  }
 
   function startCooldown(seconds: number) {
     cooldownSeconds = seconds;
@@ -105,6 +122,8 @@
 
       if (res.otp_wait && res.otp_wait > 0) {
         startCooldown(res.otp_wait);
+      } else if (res.otp_sent) {
+        startCooldown(60);
       }
     } catch (err) {
       errorMsg = getErrorMessage(err);
