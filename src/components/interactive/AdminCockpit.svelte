@@ -73,7 +73,13 @@
       <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-right">
         <span class="block text-[10px] uppercase font-bold text-white/40">Status do Banco</span>
         <span class="text-xs font-mono font-bold text-emerald-400">
-          {systemStatus?.database ?? (loading ? 'Conectando...' : 'Indisponível')}
+          {#if loading}
+            Conectando...
+          {:else if systemStatus?.db_ok === true || systemStatus?.database}
+            Operacional
+          {:else}
+            Indisponível
+          {/if}
         </span>
       </div>
     </div>
@@ -178,117 +184,31 @@
     </div>
   </div>
 
-  <!-- Operational Modules Grid -->
-  <div>
-    <h2 class="font-display text-lg text-white mb-4 flex items-center gap-2">
-      <span>Módulos de Gestão Soberana</span>
-      <span class="text-xs font-sans text-white/40 font-normal">(Direto nas APIs /api/v1/staff/*)</span>
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Módulo Polos -->
-      <a href="/polos" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition">
-            🏛️
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Polos & Coordenadores</h3>
-            <p class="text-xs text-white/50">Criação de polos, coordenadores e padrão regional</p>
-          </div>
-        </div>
+  <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+    <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h2 class="font-display text-lg text-white">Próximas decisões</h2>
+        <p class="text-xs text-white/50">Ações que exigem atenção do staff agora.</p>
+      </div>
+      <span class="text-xs text-white/40">Dados ao vivo das APIs staff</span>
+    </div>
+    <div class="mt-5 grid grid-cols-1 gap-2 md:grid-cols-2">
+      <a href="/documentos" class="flex min-h-12 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-brand-yellow/50 hover:bg-white/10">
+        <span><strong class="block text-sm text-white">Revisões documentais</strong><span class="text-xs text-white/50">RG, comprovante e selfie aguardando decisão</span></span>
+        <span class="font-display text-lg text-brand-yellow">{pendingReviews === null ? '—' : pendingReviews.length}</span>
       </a>
-
-      <!-- Módulo Documentos -->
-      <a href="/documentos" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition">
-            📋
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Dossiês & Documentos</h3>
-            <p class="text-xs text-white/50">Revisão visual e aprovação soberana de alunos</p>
-          </div>
-        </div>
+      <a href="/usuarios" class="flex min-h-12 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-brand-yellow/50 hover:bg-white/10">
+        <span><strong class="block text-sm text-white">Pessoas e matrículas</strong><span class="text-xs text-white/50">Leads, alunos, promotores e resgates</span></span>
+        <span class="text-sm font-semibold text-brand-yellow">Abrir</span>
       </a>
-
-      <!-- Módulo Financeiro -->
-      <a href="/financeiro" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition">
-            💰
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Gestão Financeira & Repasses</h3>
-            <p class="text-xs text-white/50">Fechamentos, extrato contábil, saldo Asaas e razão contábil</p>
-          </div>
-        </div>
+      <a href="/polos" class="flex min-h-12 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-brand-yellow/50 hover:bg-white/10">
+        <span><strong class="block text-sm text-white">Rede de polos</strong><span class="text-xs text-white/50">Coordenadores e polo padrão</span></span>
+        <span class="font-display text-lg text-brand-yellow">{hubs === null ? '—' : hubs.length}</span>
       </a>
-
-      <!-- Módulo Preços & Planos -->
-      <a href="/precos" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 group-hover:scale-105 transition">
-            🏷️
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Preços & Regras Comerciais</h3>
-            <p class="text-xs text-white/50">Valores de vitrine, desconto por consultor e simulação</p>
-          </div>
-        </div>
-      </a>
-
-      <!-- Módulo Usuários & Alunos -->
-      <a href="/usuarios" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition">
-            👥
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Usuários, Leads & Alunos</h3>
-            <p class="text-xs text-white/50">Matrículas, liberação de ensino e resgate de cadastros</p>
-          </div>
-        </div>
-      </a>
-
-      <!-- Módulo Treinamento -->
-      <a href="/treinamento" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-105 transition">
-            📚
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Catálogo de Treinamento</h3>
-            <p class="text-xs text-white/50">Matérias para promotores, gabaritos e ajuste manual</p>
-          </div>
-        </div>
-      </a>
-
-      <!-- Módulo Notificações -->
-      <a href="/notificacoes" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 group-hover:scale-105 transition">
-            🔔
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Notificações & TTS</h3>
-            <p class="text-xs text-white/50">Modelos WhatsApp, E-mail, histórico e síntese de voz</p>
-          </div>
-        </div>
-      </a>
-
-      <!-- Módulo Sistema & Auditoria -->
-      <a href="/auditoria" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition block group">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition">
-            🛡️
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-base">Sistema, Versão & Auditoria</h3>
-            <p class="text-xs text-white/50">Oráculo de versão global, logs de IA e integrações</p>
-          </div>
-        </div>
+      <a href="/financeiro" class="flex min-h-12 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-brand-yellow/50 hover:bg-white/10">
+        <span><strong class="block text-sm text-white">Fechamento semanal</strong><span class="text-xs text-white/50">Comissões aguardando repasse</span></span>
+        <span class="text-sm font-semibold text-brand-yellow">Abrir</span>
       </a>
     </div>
-  </div>
+  </section>
 </div>

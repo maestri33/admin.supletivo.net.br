@@ -189,8 +189,16 @@ export function loginStaffPassword(payload: {
  * ========================================================================= */
 
 export interface SystemStatusOut {
-  server_time: string;
-  database: string;
+  server_time?: string;
+  db_ok?: boolean;
+  database?: string;
+  migrations_pending?: string[];
+  qcluster_alive?: boolean;
+  queued_tasks?: number | null;
+  success_tasks?: number;
+  failure_tasks?: number;
+  debug?: boolean;
+  external_url?: string;
   version?: string;
   cache_connected?: boolean;
   services?: Record<string, string>;
