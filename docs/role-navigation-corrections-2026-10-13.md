@@ -20,7 +20,9 @@
 
 ## Limites e release
 
-Sem deploy nesta execução. Há mudanças paralelas em autenticação/navegação no workspace; foi solicitado estabilizar o trabalho do Antigravity antes de montar release. Não há homologação visual nem smoke em produção destas mudanças.
+Publicado após o usuário confirmar o fim da execução paralela: navegação `.111` e correção do carregamento do modal de polo `.114`. Worker atual `e5eb1905-40b3-4118-9313-f145f208a599`, código `c0dafbdf6aef0fc244b34d04b89f94be87ea566e`. Rollback da correção: Worker `29c7f0e3-87a2-46a5-aeb9-94cfee9b9cac`.
+
+Smoke autenticado em produção: cockpit/saldo, consulta de lead real e seus responsáveis/valores, contexto Alunos em Documentos, listagem de polos e modal Novo polo. O modal aguarda as consultas; exige escolha explícita de coordenador e não marca polo padrão quando já existem polos. Não foi submetida criação de polo, troca de coordenador, pagamento ou alteração de proposta de terceiro durante este smoke. Apenas o usuário homologa o resultado.
 
 Ordem de publicação: backend (contratos e bloqueio de valores), admin e app. Incrementar versão global pelo oráculo na entrega; registrar versões implantadas, smoke autenticado e rollback antes de declarar disponibilidade.
 
