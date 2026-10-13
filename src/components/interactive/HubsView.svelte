@@ -121,7 +121,7 @@
   function openCreateModal() {
     createError = null;
     newBrand = 'standard';
-    newCoordinatorId = promoters.length > 0 ? promoters[0].external_id : '';
+    newCoordinatorId = '';
     newCep = '';
     newStreet = '';
     newNumber = '';
@@ -199,8 +199,9 @@
   );
 
   onMount(() => {
-    loadData();
-    if (new URLSearchParams(window.location.search).get('new') === '1') openCreateModal();
+    void loadData().then(() => {
+      if (!errorMsg && new URLSearchParams(window.location.search).get('new') === '1') openCreateModal();
+    });
   });
 </script>
 
