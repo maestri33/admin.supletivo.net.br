@@ -200,6 +200,7 @@
 
   onMount(() => {
     loadData();
+    if (new URLSearchParams(window.location.search).get('new') === '1') openCreateModal();
   });
 </script>
 

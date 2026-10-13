@@ -122,6 +122,12 @@
   }
 
   onMount(() => {
+    const path = window.location.pathname;
+    if (path === '/alunos') {
+      const requestedRole = new URLSearchParams(window.location.search).get('role');
+      selectedRoleFilter = ['lead', 'enrollment', 'student'].includes(requestedRole ?? '') ? requestedRole! : 'student';
+    }
+    if (path === '/promotores') selectedRoleFilter = 'promoter';
     loadUsers();
   });
 </script>

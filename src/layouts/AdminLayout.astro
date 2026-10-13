@@ -57,15 +57,15 @@ const isLoginPage = pathname === '/login';
     <AdminHeader currentPath={pathname} />
 
     <!-- Navigation Tabs (Only if not in login page) -->
-    {!isLoginPage && <AdminNav client:load currentPath={pathname} />}
+    {!isLoginPage && <AdminNav client:load currentPath={pathname + Astro.url.search} />}
 
     <!-- Main Content Area (Natural fluid scroll) -->
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10 pb-[calc(7rem+env(safe-area-inset-bottom))]">
       <slot />
     </main>
 
     <!-- Footer minimal -->
-    <footer class="mt-auto border-t border-white/5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] text-center text-xs text-white/40">
+    <footer class="mt-auto border-t border-white/5 py-4 pb-[calc(7rem+env(safe-area-inset-bottom))] text-center text-xs text-white/40">
       <p>© 2026 Supletivo Brasil • Painel de Controle Soberano • {`v${pkg.version}`}</p>
     </footer>
   </body>

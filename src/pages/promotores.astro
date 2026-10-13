@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import UsersView from '../components/interactive/UsersView.svelte';
+---
+
+<AdminLayout title="Promotores — Supletivo Brasil" requireAuth={true}>
+  <UsersView client:load />
+</AdminLayout>

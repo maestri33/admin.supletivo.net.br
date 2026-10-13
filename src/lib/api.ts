@@ -590,6 +590,25 @@ export function listLeads(hub?: string, status?: string): Promise<StaffLeadOut[]
   return requestAuth<StaffLeadOut[]>(`/api/v1/staff/leads${query}`);
 }
 
+export interface LeadDetail {
+  external_id: string;
+  status: string;
+  created_at: string;
+  customer: { name?: string | null; cpf?: string | null; phone?: string | null; email?: string | null };
+  promoter: { name?: string | null; contact_url?: string | null };
+  hub?: { name?: string | null; coordinator_name?: string | null; contact_url?: string | null } | null;
+  pricing?: { pix: string; card: { installments: number; installment: string; total: string }; has_discount?: boolean; promo_pix?: string | null; promo_card?: { installments: number; installment: string; total: string } | null } | null;
+  checkout?: { amount: string; payment_method: string; provider: string; is_paid: boolean; paid_at?: string | null; receipt_url?: string | null } | null;
+}
+
+export function getLeadDetail(id: string): Promise<LeadDetail> {
+  return requestAuth<LeadDetail>(`/api/v1/staff/leads/${encodeURIComponent(id)}`);
+}
+
+export function updateLeadPricing(id: string, values: { pix: string; card_installment: string; card_installments: number }): Promise<LeadDetail> {
+  return requestAuth<LeadDetail>(`/api/v1/staff/leads/${encodeURIComponent(id)}/pricing`, { method: 'PUT', json: values });
+}
+
 export interface StaffStudentOut {
   external_id: string;
   status: string;

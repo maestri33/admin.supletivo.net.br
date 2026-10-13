@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import UsersView from '../components/interactive/UsersView.svelte';
+import LeadsView from '../components/interactive/LeadsView.svelte';
+---
+
+<AdminLayout title="Alunos — Supletivo Brasil" requireAuth={true}>
+  {Astro.url.searchParams.get('role') === 'lead' ? <LeadsView client:load /> : <UsersView client:load />}
+</AdminLayout>

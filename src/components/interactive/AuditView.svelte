@@ -35,6 +35,10 @@
 </script>
 
 <div class="space-y-6">
+  <div class="flex flex-wrap gap-3">
+    <a class="btn min-h-12 px-5 py-3" href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Abrir Cloudflare</a>
+    <a class="btn min-h-12 px-5 py-3" href="https://portal.azure.com/" target="_blank" rel="noopener noreferrer">Abrir Azure</a>
+  </div>
   <div class="flex items-center justify-between border-b border-white/10 pb-4">
     <div>
       <h1 class="font-display text-2xl text-white">Sistema & Auditoria Soberana</h1>
@@ -97,7 +101,7 @@
       <div class="space-y-2 text-xs">
         <div class="flex justify-between py-1 border-b border-white/5">
           <span class="text-white/50">Engine de Dados:</span>
-          <span class="font-mono text-white">{system?.database || 'SQLite / Postgres'}</span>
+          <span class="font-mono text-white">{system?.database || 'Não informado'}</span>
         </div>
         <div class="flex justify-between py-1 border-b border-white/5">
           <span class="text-white/50">Horário do Servidor:</span>
@@ -105,7 +109,7 @@
         </div>
         <div class="flex justify-between py-1">
           <span class="text-white/50">Cache Conectado:</span>
-          <span class="font-bold text-emerald-400">Ativo</span>
+          <span class="text-white/60">{system?.cache_connected === true ? 'Conectado' : system?.cache_connected === false ? 'Desconectado' : 'Não informado pelo servidor'}</span>
         </div>
       </div>
     </div>
@@ -114,7 +118,7 @@
     <div class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
       <h3 class="font-bold text-white text-sm uppercase tracking-wider text-white/60">Integrações de Borda</h3>
       {#if integrations.length === 0}
-        <div class="text-xs text-white/40 py-4">Nenhuma integração reportando falha.</div>
+        <div class="text-xs text-white/40 py-4">Nenhuma integração disponível nesta consulta.</div>
       {:else}
         <div class="space-y-2 text-xs">
           {#each integrations as integ}
