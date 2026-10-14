@@ -1,183 +1,158 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import {
-    getFinanceBalance,
-    getFinanceSummary,
-    listCommissions,
-    type FinanceBalanceOut,
-    type FinanceSummaryOut,
-    type StaffCommissionOut,
+    getFinanceBalance, getFinanceSummary, listCommissions,
+    type FinanceBalanceOut, type FinanceSummaryOut, type StaffCommissionOut,
   } from '@/lib/api';
+  import {
+    loadingResource, readFinancialResource, confirmedMoney, summaryTotal, commissionAmount,
+  } from '@/lib/financial-state';
   import { formatCurrencyBrl, formatDateBr } from '@/lib/utils';
+  import PaymentAttemptsView from './PaymentAttemptsView.svelte';
 
-  let balance: FinanceBalanceOut | null = null;
-  let summary: FinanceSummaryOut | null = null;
-  let commissions: StaffCommissionOut[] = [];
-  let loading: boolean = true;
-  let errorMsg: string | null = null;
+  let balance = $state(loadingResource<FinanceBalanceOut>());
+  let summary = $state(loadingResource<FinanceSummaryOut>());
+  let commissions = $state(loadingResource<StaffCommissionOut[]>());
 
   const ROLE_LABELS: Record<string, string> = {
-    promoter: 'Promotor',
-    coordinator: 'Coordenador de Polo',
-    staff: 'Administrador',
+    promoter: 'Promotor', coordinator: 'Coordenador de Polo', staff: 'Administrador',
   };
-
   const SOURCE_LABELS: Record<string, string> = {
-    enrollment: 'Matrícula',
-    manual: 'Lançamento Manual',
-    bonus: 'Bônus Semanal',
-    referral: 'Indicação',
+    enrollment: 'Matrícula', manual: 'Lançamento manual', bonus: 'Bônus semanal', referral: 'Indicação',
   };
-
   const STATUS_LABELS: Record<string, string> = {
-    pending: 'Pendente',
-    queued: 'Na Fila',
-    paid: 'Pago',
-    canceled: 'Cancelado',
-    failed: 'Falhou',
+    pending: 'Pendente', queued: 'Na fila', paid: 'Pago', canceled: 'Cancelado', failed: 'Falhou',
   };
 
-  function translatePayeeRole(role?: string | null): string {
-    if (!role) return 'Promotor';
-    return ROLE_LABELS[role.toLowerCase()] || role;
+  function label(value: string | null | undefined, labels: Record<string, string>): string {
+    return value ? labels[value.toLowerCase()] ?? value : 'Não informado';
   }
 
-  function translateSourceType(source?: string | null): string {
-    if (!source) return 'Matrícula';
-    return SOURCE_LABELS[source.toLowerCase()] || source;
+  async function loadBalance() {
+    balance = loadingResource();
+    balance = await readFinancialResource(
+      getFinanceBalance,
+      (value) => !!value && !value.error && confirmedMoney(value.balance) !== null,
+      'Saldo Asaas indisponível. Tente consultar novamente.',
+    );
   }
 
-  function translateStatus(status?: string | null): string {
-    if (!status) return 'Pendente';
-    return STATUS_LABELS[status.toLowerCase()] || status;
+  async function loadSummary() {
+    summary = loadingResource();
+    summary = await readFinancialResource(
+      getFinanceSummary,
+      (value) => summaryTotal(value, 'pending') !== null && summaryTotal(value, 'paid') !== null,
+      'Resumo de comissões indisponível. Tente consultar novamente.',
+    );
   }
 
-  function getPendingTotal(sum: FinanceSummaryOut | null): number {
-    if (!sum) return 0;
-    if (sum.commissions?.pending?.total !== undefined) {
-      return Number(sum.commissions.pending.total) || 0;
-    }
-    return (sum.pending_commissions_cents ?? 0) / 100;
+  async function loadCommissions() {
+    commissions = loadingResource();
+    commissions = await readFinancialResource(
+      listCommissions, Array.isArray,
+      'Lista de comissões indisponível. Tente consultar novamente.',
+    );
   }
 
-  function getPaidTotal(sum: FinanceSummaryOut | null): number {
-    if (!sum) return 0;
-    if (sum.commissions?.paid?.total !== undefined) {
-      return Number(sum.commissions.paid.total) || 0;
-    }
-    return (sum.paid_commissions_cents ?? 0) / 100;
-  }
-
-  function getCommissionAmount(c: StaffCommissionOut): number {
-    if (c.amount !== undefined) {
-      return Number(c.amount) || 0;
-    }
-    return (c.amount_cents ?? 0) / 100;
-  }
-
-  onMount(async () => {
-    try {
-      const [balRes, sumRes, commRes] = await Promise.allSettled([
-        getFinanceBalance(),
-        getFinanceSummary(),
-        listCommissions(),
-      ]);
-      if (balRes.status === 'fulfilled') balance = balRes.value;
-      if (sumRes.status === 'fulfilled') summary = sumRes.value;
-      if (commRes.status === 'fulfilled') commissions = commRes.value;
-    } catch (err: any) {
-      errorMsg = err?.message || 'Falha ao carregar dados financeiros';
-    } finally {
-      loading = false;
-    }
-  });
+  onMount(() => { void loadBalance(); void loadSummary(); void loadCommissions(); });
 </script>
 
-<div class="space-y-6">
-  <div class="flex items-center justify-between border-b border-white/10 pb-4">
-    <div>
-      <h1 class="font-display text-2xl text-white">Gestão Financeira & Repasses</h1>
-      <p class="text-xs text-white/60">Controle soberano de saldos Asaas, comissões e fechamentos</p>
-    </div>
+<div class="finance-view space-y-6">
+  <div class="border-b border-paper/10 pb-4">
+    <h1 class="font-display text-2xl text-paper">Gestão Financeira & Repasses</h1>
+    <p class="text-sm text-muted-on-dark">Saldos Asaas, comissões e acompanhamento dos pagamentos</p>
   </div>
 
-  {#if errorMsg}
-    <div class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
-      {errorMsg}
-    </div>
-  {/if}
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <section class="finance-card" aria-labelledby="balance-title" aria-busy={balance.loading}>
+      <h2 id="balance-title" class="text-sm font-bold text-muted-on-dark">Saldo disponível</h2>
+      {#if balance.loading}
+        <p class="py-2 text-sm" role="status">Consultando saldo...</p>
+      {:else if balance.error}
+        <p class="finance-error mt-2" role="alert">{balance.error}</p>
+      {:else}
+        <p class="mt-1 font-display text-2xl">{formatCurrencyBrl(balance.data!.balance)}</p>
+      {/if}
+      <p class="mt-2 text-sm text-muted-on-dark">Conta principal Asaas</p>
+      <button type="button" class="finance-action mt-3" onclick={loadBalance} disabled={balance.loading}>Consultar saldo</button>
+    </section>
 
-  <!-- Balance Banner -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <span class="text-xs font-bold uppercase tracking-wider text-white/50">Saldo Disponível</span>
-      <div class="font-display text-2xl text-emerald-400 mt-1">
-        {formatCurrencyBrl(balance?.balance ?? 0)}
+    <section class="finance-card sm:col-span-2" aria-labelledby="summary-title" aria-busy={summary.loading}>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="summary-title" class="text-sm font-bold text-muted-on-dark">Resumo de comissões</h2>
+        <button type="button" class="finance-action" onclick={loadSummary} disabled={summary.loading}>Consultar resumo</button>
       </div>
-      <span class="text-[11px] text-white/40">Conta Principal Asaas</span>
-    </div>
-
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <span class="text-xs font-bold uppercase tracking-wider text-white/50">Comissões Pendentes</span>
-      <div class="font-display text-2xl text-amber-400 mt-1">
-        {formatCurrencyBrl(getPendingTotal(summary))}
-      </div>
-      <span class="text-[11px] text-white/40">Aguardando ciclo semanal</span>
-    </div>
-
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <span class="text-xs font-bold uppercase tracking-wider text-white/50">Total Pago Histórico</span>
-      <div class="font-display text-2xl text-purple-400 mt-1">
-        {formatCurrencyBrl(getPaidTotal(summary))}
-      </div>
-      <span class="text-[11px] text-white/40">Liquidado via PIX</span>
-    </div>
+      {#if summary.loading}
+        <p class="py-2 text-sm" role="status">Consultando comissões...</p>
+      {:else if summary.error}
+        <p class="finance-error mt-2" role="alert">{summary.error}</p>
+      {:else}
+        <dl class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm text-muted-on-dark">Comissões pendentes</dt>
+            <dd class="mt-1 font-display text-2xl">{formatCurrencyBrl(summaryTotal(summary.data, 'pending'))}</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-muted-on-dark">Total pago histórico</dt>
+            <dd class="mt-1 font-display text-2xl">{formatCurrencyBrl(summaryTotal(summary.data, 'paid'))}</dd>
+          </div>
+        </dl>
+      {/if}
+    </section>
   </div>
 
-  <!-- Commissions Table -->
-  <div class="space-y-3">
-    <h2 class="font-display text-lg text-white">Últimas Comissões Geradas</h2>
-    {#if loading}
-      <div class="py-8 text-center text-sm text-white/40">Carregando comissões...</div>
-    {:else if commissions.length === 0}
-      <div class="rounded-2xl border border-dashed border-white/10 p-12 text-center text-sm text-white/40">
-        Nenhuma comissão registrada até o momento.
-      </div>
+  <PaymentAttemptsView />
+
+  <section class="space-y-3" aria-labelledby="commissions-title" aria-busy={commissions.loading}>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="commissions-title" class="font-display text-lg">Últimas comissões geradas</h2>
+      <button type="button" class="finance-action" onclick={loadCommissions} disabled={commissions.loading}>Consultar comissões</button>
+    </div>
+    {#if commissions.loading}
+      <p class="py-8 text-center text-sm text-muted-on-dark" role="status">Carregando comissões...</p>
+    {:else if commissions.error}
+      <p class="finance-error" role="alert">{commissions.error}</p>
+    {:else if commissions.data!.length === 0}
+      <p class="finance-card py-8 text-center text-sm text-muted-on-dark">Nenhuma comissão registrada até o momento.</p>
     {:else}
-      <div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/5">
-        <table class="w-full text-left text-xs text-white/80">
-          <thead class="border-b border-white/10 bg-white/5 uppercase font-bold text-[10px] text-white/50 tracking-wider">
+      <div class="overflow-x-auto rounded-2xl border border-paper/10 bg-ink-soft">
+        <table class="w-full text-left text-sm">
+          <caption class="sr-only">Comissões, beneficiários, valores e situação confirmados pelo servidor</caption>
+          <thead class="border-b border-paper/10 text-muted-on-dark">
             <tr>
-              <th class="px-4 py-3">Beneficiário</th>
-              <th class="px-4 py-3">Papel</th>
-              <th class="px-4 py-3">Origem</th>
-              <th class="px-4 py-3">Valor</th>
-              <th class="px-4 py-3">Status</th>
-              <th class="px-4 py-3">Data</th>
+              <th scope="col" class="px-4 py-3">Beneficiário</th>
+              <th scope="col" class="px-4 py-3">Papel</th>
+              <th scope="col" class="px-4 py-3">Origem</th>
+              <th scope="col" class="px-4 py-3">Valor</th>
+              <th scope="col" class="px-4 py-3">Situação</th>
+              <th scope="col" class="px-4 py-3">Data</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-white/5">
-            {#each commissions as c}
-              <tr class="hover:bg-white/5 transition">
-                <td class="px-4 py-3 font-semibold text-white">
-                  {c.beneficiary_name || c.payee_external_id || '—'}
+          <tbody class="divide-y divide-paper/10">
+            {#each commissions.data! as commission (commission.external_id)}
+              <tr>
+                <td class="px-4 py-3 font-semibold">{commission.beneficiary_name || commission.payee_external_id || 'Não informado'}</td>
+                <td class="px-4 py-3">{label(commission.payee_role, ROLE_LABELS)}</td>
+                <td class="px-4 py-3">{label(commission.source_type, SOURCE_LABELS)}</td>
+                <td class="px-4 py-3 font-mono font-bold">
+                  {commissionAmount(commission) === null ? 'Indisponível' : formatCurrencyBrl(commissionAmount(commission))}
                 </td>
-                <td class="px-4 py-3 text-white/70">{translatePayeeRole(c.payee_role)}</td>
-                <td class="px-4 py-3 text-white/60">{translateSourceType(c.source_type)}</td>
-                <td class="px-4 py-3 font-mono font-bold text-emerald-400">
-                  {formatCurrencyBrl(getCommissionAmount(c))}
-                </td>
-                <td class="px-4 py-3">
-                  <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {c.status === 'paid' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
-                    {translateStatus(c.status)}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-white/60">{formatDateBr(c.created_at)}</td>
+                <td class="px-4 py-3">{label(commission.status, STATUS_LABELS)}</td>
+                <td class="whitespace-nowrap px-4 py-3">{formatDateBr(commission.created_at)}</td>
               </tr>
             {/each}
           </tbody>
         </table>
       </div>
     {/if}
-  </div>
+  </section>
 </div>
+
+<style>
+  .finance-view { color: var(--paper); }
+  .finance-card { border: 1px solid var(--glass-border-dark); border-radius: var(--radius); background: var(--ink-soft); padding: 1.25rem; }
+  .finance-error { border-radius: var(--input-radius); background: var(--danger-bg); color: var(--danger); padding: 1rem; font-size: 0.875rem; }
+  .finance-action { min-height: var(--input-height); border: 1px solid var(--muted-on-dark); border-radius: var(--input-radius); padding: 0.5rem 1rem; color: var(--paper); font-weight: 700; font-size: 0.875rem; cursor: pointer; }
+  .finance-action:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+  .finance-action:disabled { opacity: 0.6; cursor: wait; }
+</style>

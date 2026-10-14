@@ -539,6 +539,33 @@ export function listCommissions(status?: string): Promise<StaffCommissionOut[]> 
   return requestAuth<StaffCommissionOut[]>(`/api/v1/staff/finance/commissions${query}`);
 }
 
+export interface StaffPaymentAttemptOut {
+  external_id: string;
+  lead_external_id: string;
+  provider: string;
+  amount: string; // Decimal BRL, never cents.
+  status: string;
+  provider_payment_id: string | null;
+  provider_confirmed: boolean;
+  app_applied: boolean;
+  superseded: boolean;
+  creation_uncertain: boolean;
+  last_error: string | null; // Sanitized code; never a provider payload.
+  next_retry_at: string | null;
+  created_at: string;
+}
+
+export function listPaymentAttempts(): Promise<StaffPaymentAttemptOut[]> {
+  return requestAuth<StaffPaymentAttemptOut[]>('/api/v1/staff/payment-attempts');
+}
+
+export function reconcilePaymentAttempt(externalId: string): Promise<StaffPaymentAttemptOut> {
+  return requestAuth<StaffPaymentAttemptOut>(
+    `/api/v1/staff/payment-attempts/${encodeURIComponent(externalId)}/reconcile`,
+    { method: 'POST' },
+  );
+}
+
 /* =========================================================================
  * 6. USUÁRIOS & ROLES (/api/v1/staff/users, leads, students)
  * ========================================================================= */

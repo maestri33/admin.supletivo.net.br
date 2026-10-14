@@ -57,3 +57,26 @@ test('a lost mutation response is surfaced without replaying a payout request', 
   await assert.rejects(api.requestAuth('/payment', { method: 'POST', json: { amount: '10.00' } }), TypeError);
   assert.equal(attempts, 1);
 });
+
+test('payment diagnostics use authenticated reads and a bodyless server verification request', async () => {
+  const attempt = { external_id: 'attempt/1', amount: '1.02', provider_confirmed: false, app_applied: false };
+  const calls = [];
+  globalThis.fetch = async (url, options) => {
+    calls.push({ url, options });
+    return new Response(JSON.stringify(options.method === 'GET' ? [attempt] : attempt));
+  };
+  assert.deepEqual(await api.listPaymentAttempts(), [attempt]);
+  assert.deepEqual(await api.reconcilePaymentAttempt('attempt/1'), attempt);
+  assert.equal(calls[0].url, '/api/v1/staff/payment-attempts');
+  assert.equal(calls[1].url, '/api/v1/staff/payment-attempts/attempt%2F1/reconcile');
+  assert.equal(calls[1].options.method, 'POST');
+  assert.equal(calls[1].options.body, undefined);
+  assert.equal(calls[1].options.headers.Authorization, 'Bearer expired');
+});
+
+test('an uncertain verification result is surfaced without replaying the operator action', async () => {
+  let calls = 0;
+  globalThis.fetch = async () => { calls += 1; throw new TypeError('Connection closed'); };
+  await assert.rejects(api.reconcilePaymentAttempt('attempt-1'), TypeError);
+  assert.equal(calls, 1);
+});
