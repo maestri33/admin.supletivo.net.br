@@ -1,6 +1,6 @@
 {
   "name": "admin.supletivo.net.br",
-  "version": "0.0.0-sandbox.123",
+  "version": "0.0.1-beta",
   "private": true,
   "scripts": {
     "dev": "astro dev --port 3030",
@@ -11,7 +11,9 @@
     "sync": "astro sync",
     "lint": "eslint",
     "check-types": "tsc --noEmit",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "test:cli": "playwright-cli",
+    "test:cli:show": "playwright-cli show"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
