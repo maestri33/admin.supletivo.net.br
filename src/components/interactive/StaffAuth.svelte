@@ -20,23 +20,23 @@
   import { formatCpf, formatPhone } from '@/lib/utils';
 
   type AuthMode = 'otp' | 'password';
-  let mode: AuthMode = 'otp';
+  let mode = $state<AuthMode>('otp');
 
   // State: OTP Flow
-  let step: 'identifier' | 'otp' = 'identifier';
-  let identifier: string = '';
-  let otpCode: string = '';
-  let checkPayload: StaffCheckPayload | null = null;
-  let cooldownSeconds: number = 0;
+  let step = $state<'identifier' | 'otp'>('identifier');
+  let identifier = $state('');
+  let otpCode = $state('');
+  let checkPayload = $state<StaffCheckPayload | null>(null);
+  let cooldownSeconds = $state(0);
   let cooldownInterval: any = null;
 
   // State: Password Flow
-  let masterIdentifier: string = '';
-  let masterPassword: string = '';
+  let masterIdentifier = $state('');
+  let masterPassword = $state('');
 
   // Common UI State
-  let loading: boolean = false;
-  let errorMsg: string | null = null;
+  let loading = $state(false);
+  let errorMsg = $state<string | null>(null);
 
   onMount(() => { void resumeSession(); });
 
@@ -234,14 +234,14 @@
     <div class="grid grid-cols-2 gap-1 rounded-xl bg-white/5 p-1 mb-6 border border-white/5">
       <button
         type="button"
-        on:click={() => { mode = 'otp'; errorMsg = null; }}
+        onclick={() => { mode = 'otp'; errorMsg = null; }}
         class="rounded-lg py-2 text-xs font-semibold transition-all {mode === 'otp' ? 'bg-brand-yellow text-brand-ink shadow font-bold' : 'text-white/60 hover:text-white'}"
       >
         WhatsApp (OTP)
       </button>
       <button
         type="button"
-        on:click={() => { mode = 'password'; errorMsg = null; }}
+        onclick={() => { mode = 'password'; errorMsg = null; }}
         class="rounded-lg py-2 text-xs font-semibold transition-all {mode === 'password' ? 'bg-white/15 text-white shadow font-bold' : 'text-white/60 hover:text-white'}"
       >
         Senha Master
@@ -263,7 +263,7 @@
     <!-- TAB 1: WhatsApp (OTP) Flow -->
     {#if mode === 'otp'}
       {#if step === 'identifier'}
-        <form on:submit|preventDefault={() => submitCheck()} class="space-y-4">
+        <form onsubmit={(e) => { e.preventDefault(); (() => submitCheck())(); }} class="space-y-4">
           <div>
             <label for="identifier" class="block text-xs font-semibold text-white/80 mb-1.5">
               Telefone WhatsApp ou CPF
@@ -274,7 +274,7 @@
               inputmode="numeric"
               placeholder="(11) 99999-9999 ou CPF"
               bind:value={identifier}
-              on:input={handleIdentifierInput}
+              oninput={handleIdentifierInput}
               disabled={loading}
               autocomplete="tel"
               class="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-base text-white placeholder-white/30 focus:border-brand-yellow focus:outline-none focus:ring-1 focus:ring-brand-yellow transition"
@@ -298,7 +298,7 @@
         </form>
       {:else}
         <!-- Step 2: OTP Validation -->
-        <form on:submit|preventDefault={() => submitOtp()} class="space-y-4">
+        <form onsubmit={(e) => { e.preventDefault(); (() => submitOtp())(); }} class="space-y-4">
           <div>
             <div class="flex items-center justify-between mb-1.5">
               <label for="otp" class="text-xs font-semibold text-white/80">
@@ -306,7 +306,7 @@
               </label>
               <button
                 type="button"
-                on:click={resetToIdentifier}
+                onclick={resetToIdentifier}
                 class="text-[11px] text-brand-yellow hover:underline"
               >
                 Trocar número
@@ -319,7 +319,7 @@
               maxlength="6"
               placeholder="••••••"
               bind:value={otpCode}
-              on:input={handleOtpInput}
+              oninput={handleOtpInput}
               disabled={loading}
               autocomplete="one-time-code"
               class="w-full text-center tracking-[0.5em] font-mono rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-2xl font-bold text-brand-yellow placeholder-white/20 focus:border-brand-yellow focus:outline-none focus:ring-1 focus:ring-brand-yellow transition"
@@ -337,7 +337,7 @@
             <div class="text-center">
               <button
                 type="button"
-                on:click={() => submitCheck()}
+                onclick={() => submitCheck()}
                 disabled={loading}
                 class="text-xs font-semibold text-brand-yellow hover:underline"
               >
@@ -361,7 +361,7 @@
       {/if}
     {:else}
       <!-- TAB 2: Contingency Master Password -->
-      <form on:submit|preventDefault={submitMasterPassword} class="space-y-4">
+      <form onsubmit={(e) => { e.preventDefault(); (submitMasterPassword)(); }} class="space-y-4">
         <div>
           <label for="master-id" class="block text-xs font-semibold text-white/80 mb-1.5">
             Identificador (CPF, Telefone ou E-mail)
@@ -405,3 +405,4 @@
     {/if}
   </div>
 </div>
+

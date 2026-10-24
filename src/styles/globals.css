@@ -193,6 +193,16 @@ textarea {
   box-shadow: 0 0 0 7px rgb(0 39 118 / 0.85);
 }
 
+/* Foco acessível em formulários (Web Interface Guidelines) */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: var(--yellow) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--yellow) 25%, transparent) !important;
+}
+
 /* Varredura luminosa periódica no CTA (DESIGN.md) */
 @media (prefers-reduced-motion: no-preference) {
   .btn::before {

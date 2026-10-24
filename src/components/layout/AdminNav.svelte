@@ -1,5 +1,8 @@
 <script lang="ts">
-  export let currentPath: string = '/';
+  interface Props {
+    currentPath?: string;
+  }
+  let { currentPath = '/' }: Props = $props();
 
   function isActive(href: string): boolean {
     const current = new URL(currentPath, 'https://admin.supletivo.net.br');
@@ -12,9 +15,9 @@
     return target.searchParams.toString() === current.searchParams.toString();
   }
 
-  $: contextSpace = new URL(currentPath, 'https://admin.supletivo.net.br').searchParams.get('space');
-  $: environment = currentPath.startsWith('/alunos') || contextSpace === 'students' ? 'students' : currentPath.startsWith('/promotores') || contextSpace === 'promoters' ? 'promoters' : currentPath.startsWith('/polos') ? 'hubs' : 'admin';
-  $: contextualItems = environment === 'students' ? [
+  let contextSpace = $derived(new URL(currentPath, 'https://admin.supletivo.net.br').searchParams.get('space'));
+  let environment = $derived(currentPath.startsWith('/alunos') || contextSpace === 'students' ? 'students' : currentPath.startsWith('/promotores') || contextSpace === 'promoters' ? 'promoters' : currentPath.startsWith('/polos') ? 'hubs' : 'admin');
+  let contextualItems = $derived(environment === 'students' ? [
     { label: 'Leads', href: '/alunos?role=lead' },
     { label: 'Matrículas', href: '/alunos?role=enrollment' },
     { label: 'Ativos', href: '/alunos?role=student' },
@@ -31,7 +34,7 @@
     { label: 'Pagamentos', href: '/financeiro' },
     { label: 'Infraestrutura', href: '/auditoria' },
     { label: 'Notificações', href: '/notificacoes' },
-  ];
+  ]);
 </script>
 
 <nav aria-label="Navegação Administrativa" class="w-full border-b border-white/10 bg-brand-ink/70 backdrop-blur-md">
