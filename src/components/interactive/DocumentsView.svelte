@@ -9,6 +9,8 @@
     getErrorMessage,
   } from '@/lib/api';
   import { formatDateBr, formatCpf } from '@/lib/utils';
+  import Badge from '@/components/ui/Badge.svelte';
+  import AlertDialog from '@/components/ui/AlertDialog.svelte';
 
   let reviews = $state<DocumentReviewOut[]>([]);
   let loading = $state(true);
@@ -20,6 +22,35 @@
   let dossierLoading = $state(false);
   let deciding = $state(false);
   let decisionReason = $state('');
+  let rejectionDialog = $state<{
+    isOpen: boolean;
+    kind: 'rg' | 'selfie';
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    kind: 'rg',
+    title: '',
+    description: '',
+  });
+
+  function promptReject(kind: 'rg' | 'selfie') {
+    const studentName = selectedDossier?.name || 'aluno';
+    const docName = kind === 'rg' ? 'Documento de Identidade' : 'Selfie';
+    rejectionDialog = {
+      isOpen: true,
+      kind,
+      title: `Reprovar ${docName}?`,
+      description: `Esta ação notificará ${studentName} sobre a pendência e solicitará um novo envio no painel.`,
+    };
+  }
+
+  function confirmReject() {
+    const kind = rejectionDialog.kind;
+    rejectionDialog.isOpen = false;
+    void handleDecide(kind, false);
+  }
+
 
   const TYPE_LABELS: Record<string, string> = {
     enrollment: 'Matrícula',
@@ -188,9 +219,12 @@
               </td>
               <td class="px-4 py-3 text-white/60">{formatDateBr(r.created_at || r.uploaded_at)}</td>
               <td class="px-4 py-3">
-                <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {r.validation_status === 'approved' ? 'bg-emerald-500/20 text-emerald-300' : r.validation_status === 'rejected' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'}">
+                <Badge
+                  variant={r.validation_status === 'approved' ? 'success' : r.validation_status === 'rejected' ? 'danger' : 'warning'}
+                  size="sm"
+                >
                   {translateStatus(r.validation_status)}
-                </span>
+                </Badge>
               </td>
               <td class="px-4 py-3 text-right">
                 <button
@@ -337,7 +371,7 @@
           <button
             type="button"
             disabled={deciding}
-            onclick={() => handleDecide('rg', false)}
+            onclick={() => promptReject('rg')}
             class="min-h-[48px] rounded-xl bg-rose-500/20 border border-rose-500/40 hover:bg-rose-500/30 px-4 py-2 text-xs font-bold text-rose-300 transition cursor-pointer"
           >
             ✕ Reprovar Documento
@@ -353,7 +387,7 @@
           <button
             type="button"
             disabled={deciding}
-            onclick={() => handleDecide('selfie', false)}
+            onclick={() => promptReject('selfie')}
             class="min-h-[48px] rounded-xl bg-rose-500/20 border border-rose-500/40 hover:bg-rose-500/30 px-4 py-2 text-xs font-bold text-rose-300 transition cursor-pointer"
           >
             ✕ Reprovar Selfie
@@ -362,4 +396,16 @@
       </div>
     </div>
   {/if}
+
+  <AlertDialog
+    isOpen={rejectionDialog.isOpen}
+    title={rejectionDialog.title}
+    description={rejectionDialog.description}
+    confirmLabel="Sim, Reprovar"
+    cancelLabel="Cancelar"
+    variant="danger"
+    loading={deciding}
+    onConfirm={confirmReject}
+    onCancel={() => { rejectionDialog.isOpen = false; }}
+  />
 </div>

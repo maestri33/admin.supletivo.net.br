@@ -1,6 +1,7 @@
 ---
 import AdminHeader from '../components/layout/AdminHeader.astro';
 import AdminNav from '../components/layout/AdminNav.svelte';
+import AdminCommandPalette from '../components/layout/AdminCommandPalette.svelte';
 import pkg from '../../package.json';
 import '../styles/global.css';
 
@@ -68,6 +69,8 @@ const isLoginPage = pathname === '/login';
     <footer class="mt-auto border-t border-white/5 py-4 pb-[calc(7rem+env(safe-area-inset-bottom))] text-center text-xs text-white/40">
       <p>© 2026 Supletivo Brasil • Painel de Controle Soberano • {`v${pkg.version}`}</p>
     </footer>
+    <!-- Paleta de Comandos Global (Ctrl+K) -->
+    <AdminCommandPalette client:load />
   </body>
 </html>
 
