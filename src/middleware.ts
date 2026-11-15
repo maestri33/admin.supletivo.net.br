@@ -33,24 +33,30 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
   const pathname = url.pathname;
 
-  // Static assets, public endpoints, and internal files bypass auth guard
-  if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
-    return next();
-  }
-
+  const isPublic = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
   const sessionCookie = context.cookies.get('supletivo.admin.session')?.value;
   const hasValidSession = isValidAdminJwtCookie(sessionCookie);
   const isLoginPage = pathname === '/login';
 
   // Accessing protected admin route without valid JWT session cookie -> redirect to /login
-  if (!hasValidSession && !isLoginPage) {
-    return context.redirect('/login', 302);
+  if (!isPublic) {
+    if (!hasValidSession && !isLoginPage) {
+      return context.redirect('/login', 302);
+    }
+
+    // Accessing /login while already authenticated -> redirect to root dashboard
+    if (hasValidSession && isLoginPage) {
+      return context.redirect('/', 302);
+    }
   }
 
-  // Accessing /login while already authenticated -> redirect to root dashboard
-  if (hasValidSession && isLoginPage) {
-    return context.redirect('/', 302);
-  }
+  const response = await next();
+  const headers = response.headers;
 
-  return next();
+  headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('X-Frame-Options', 'DENY');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  return response;
 });

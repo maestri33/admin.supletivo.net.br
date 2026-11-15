@@ -7,7 +7,23 @@ const URL_BACKEND = process.env.URL_BACKEND ?? 'https://backend.supletivo.net.br
 export const ALL: APIRoute = async ({ request, url }) => {
   const targetUrl = new URL(url.pathname + url.search, URL_BACKEND);
 
-  const headers = new Headers(request.headers);
+  const headers = new Headers();
+  for (const [key, val] of request.headers.entries()) {
+    const lk = key.toLowerCase();
+    if (
+      lk === 'content-length' ||
+      lk === 'connection' ||
+      lk === 'keep-alive' ||
+      lk === 'transfer-encoding' ||
+      lk === 'upgrade' ||
+      lk === 'expect' ||
+      lk === 'cf-ray' ||
+      lk === 'cf-visitor'
+    ) {
+      continue;
+    }
+    headers.set(key, val);
+  }
   headers.set('host', targetUrl.host);
   headers.set('x-forwarded-host', url.host);
   headers.set('x-forwarded-proto', url.protocol.replace(':', ''));
@@ -20,10 +36,8 @@ export const ALL: APIRoute = async ({ request, url }) => {
     headers.set('x-forwarded-for', clientIp);
   }
 
-  const body =
-    request.method !== 'GET' && request.method !== 'HEAD'
-      ? await request.arrayBuffer()
-      : undefined;
+  const hasBody = !['GET', 'HEAD'].includes(request.method);
+  const body = hasBody ? await request.arrayBuffer() : undefined;
 
   try {
     const res = await fetch(targetUrl.toString(), {
@@ -31,6 +45,7 @@ export const ALL: APIRoute = async ({ request, url }) => {
       headers,
       body,
       redirect: 'manual',
+      signal: AbortSignal.timeout(15000),
     });
 
     const responseHeaders = new Headers(res.headers);
@@ -54,7 +69,11 @@ export const ALL: APIRoute = async ({ request, url }) => {
       }),
       {
         status: 502,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': '5',
+          'Cache-Control': 'no-store',
+        },
       }
     );
   }

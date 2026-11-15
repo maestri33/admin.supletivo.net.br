@@ -7,8 +7,11 @@ import postgres from "postgres";
 export function getDb(runtimeEnv?: any) {
   const connectionString = 
     runtimeEnv?.HYPERDRIVE?.connectionString || 
-    process.env.DATABASE_URL ||
-    "postgresql://hyperdrive_ro:v7m-hyperdrive-ro-2026-prod-9a7f3b@db.v7m.live:5432/backend";
+    process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("Database connection is not configured");
+  }
 
   return postgres(connectionString, {
     max: 5,
